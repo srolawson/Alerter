@@ -63,8 +63,6 @@ public class MyService extends Service {
         final String channelId = "alert_service_channelid";
         final String channelName = "Alert Service";
         NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
-        // omitted the LED color
-        channel.setImportance(NotificationManager.IMPORTANCE_MIN);
         channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
         notificationManager.createNotificationChannel(channel);
         return channelId;
@@ -76,30 +74,31 @@ public class MyService extends Service {
 
         if (intent.getBooleanExtra(STOP_FOREGROUND_ACTION, false)) {
             stopForeground(true);
-            stopSelf();
         } else if (intent.getBooleanExtra(START_FOREGROUND_ACTION, false)) {
 
             String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
 
             Notification notification = notificationBuilder.setOngoing(true)
+                    .setContentTitle(this.getString(R.string.app_name))
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setAutoCancel(false)
-                    .setPriority(Notification.PRIORITY_MIN)
-                    .setCategory(NotificationCompat.CATEGORY_SERVICE)
                     .setVisibility(NotificationCompat.VISIBILITY_SECRET)
+                    .setPriority(NotificationCompat.PRIORITY_LOW)
                     .build();
             startForeground(ID_SERVICE, notification);
+        }
 
+        final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
+
+        if (powerManager.isInteractive()) {
+            //screen is on
+            stopVolumeAlert();
+        } else {
+            //screen is off
             final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
             final boolean isVolumeAlertOn = preferences.getBoolean("example_switch", false);
-            final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
-
-            if (powerManager.isInteractive()) {
-                //screen is on
-                stopVolumeAlert();
-            } else {
-                //screen is off
+            if (isVolumeAlertOn) {
                 setupVolumeAlert();
             }
         }
@@ -196,7 +195,7 @@ public class MyService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mediaSession.release();
+        stopVolumeAlert();
         unregister();
     }
 

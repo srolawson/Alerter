@@ -111,6 +111,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                         Log.i(SettingsActivity.class.getSimpleName(), "No contact found");
                     }
                 }
+            } else {
+                preference.setSummary(stringValue);
             }
             return true;
         }
@@ -230,7 +232,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             } else {
                 preferences.edit().putBoolean("example_switch", false).commit(); //force to off if permission(s) not granted
                 Intent intent = new Intent(getApplicationContext(), MyService.class);
-                intent.putExtra(MyService.STOP_FOREGROUND_ACTION, true);
                 stopService(intent);
             }
         }
