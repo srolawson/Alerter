@@ -23,7 +23,6 @@ import android.preference.RingtonePreference;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.Log;
@@ -90,37 +89,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
 
             } else if (preference.getKey().equals("contact")) {
-                boolean readContactPermisison = ContextCompat.checkSelfPermission(preference.getContext(),
-                        Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED;
-
-                if (readContactPermisison) {
-                    final ContentResolver contentResolver = preference.getContext().getContentResolver();
-                    final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(preference.getContext().getApplicationContext());
-                    final String contactId = preferences.getString(preference.getKey(), "");
+                final ContentResolver contentResolver = preference.getContext().getContentResolver();
+                final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(preference.getContext().getApplicationContext());
+                final String contactId = preferences.getString(preference.getKey(), "");
 
 
-                    if (contactId.isEmpty()) {
-                        Log.i(SettingsActivity.class.getSimpleName(), "Contact preference not set");
+                if (contactId.isEmpty()) {
+                    Log.i(SettingsActivity.class.getSimpleName(), "Contact preference not set");
 
+                } else {
+                    final String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
+                    final Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
+                            new String[]{contactId}, null, null);
+
+                    if (cursor != null && cursor.moveToFirst()) {
+                        final int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                        final String name = cursor.getString(nameIndex);
+                        preference.setSummary(name);
                     } else {
-                        final String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
-                        final Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                                new String[]{contactId}, null, null);
-
-                        if (cursor != null && cursor.moveToFirst()) {
-                            final int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
-                            final String name = cursor.getString(nameIndex);
-                            preference.setSummary(name);
-                        } else {
-                            preference.setSummary("");
-                            Log.i(SettingsActivity.class.getSimpleName(), "No contact found");
-                        }
+                        preference.setSummary("");
+                        Log.i(SettingsActivity.class.getSimpleName(), "No contact found");
                     }
                 }
-            } else {
-                // For all other preferences, set the summary to the value's
-                // simple string representation.
-                preference.setSummary(stringValue);
             }
             return true;
         }
@@ -239,6 +229,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 }
             } else {
                 preferences.edit().putBoolean("example_switch", false).commit(); //force to off if permission(s) not granted
+                Intent intent = new Intent(getApplicationContext(), MyService.class);
+                intent.putExtra(MyService.STOP_FOREGROUND_ACTION, true);
+                stopService(intent);
             }
         }
     }
@@ -261,7 +254,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
 
-            Preference volumeServicePreference = (Preference) findPreference("example_switch");
+            Preference volumeServicePreference = findPreference("example_switch");
             volumeServicePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
                 @Override
                 public boolean onPreferenceChange(Preference preference, Object newValue) {
@@ -315,7 +308,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference("example_text"));
             bindPreferenceSummaryToValue(findPreference("contact"));
 
-            Preference contactPicker = (Preference) findPreference("contact");
+            Preference contactPicker = findPreference("contact");
             contactPicker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
