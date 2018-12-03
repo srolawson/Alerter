@@ -80,8 +80,8 @@ public class MyService extends Service {
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
 
             Notification notification = notificationBuilder.setOngoing(true)
-                    .setContentTitle(this.getString(R.string.app_name))
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    //.setContentTitle(getResources().getString(R.string.app_name))
+                    .setSmallIcon(R.drawable.ic_stat_name)
                     .setAutoCancel(false)
                     .setVisibility(NotificationCompat.VISIBILITY_SECRET)
                     .setPriority(NotificationCompat.PRIORITY_LOW)
