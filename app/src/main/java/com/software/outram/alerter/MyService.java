@@ -76,7 +76,6 @@ public class MyService extends Service {
         if (intent.getBooleanExtra(STOP_FOREGROUND_ACTION, false)) {
             stopForeground(true);
         } else if (intent.getBooleanExtra(START_FOREGROUND_ACTION, false)) {
-            // Create the Foreground Service
             NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel(notificationManager) : "";
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
@@ -88,98 +87,108 @@ public class MyService extends Service {
                     .setVisibility(NotificationCompat.VISIBILITY_SECRET)
                     .build();
             startForeground(ID_SERVICE, notification);
-        }
 
-        if (((PowerManager) getSystemService(Context.POWER_SERVICE)).isInteractive()) {
-            if (mediaSession != null) {
-                mediaSession.release(); //do not show remote volume control if screen is on
-            }
-        } else {
             final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
             final boolean isVolumeAlertOn = preferences.getBoolean("example_switch", false);
+            final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
 
-            if (isVolumeAlertOn) {
-                final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-                final int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
-                final int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-                final Criteria criteria = new Criteria();
-                criteria.setAccuracy(Criteria.ACCURACY_FINE);
-                mediaSession = new MediaSessionCompat(this, MyService.class.getSimpleName());
-                mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-                mediaSession.setPlaybackState(new PlaybackStateCompat.Builder().setState(PlaybackStateCompat.STATE_PLAYING, 0, 0).build());
-
-                final VolumeProviderCompat volumeProvider = new VolumeProviderCompat(VolumeProviderCompat.VOLUME_CONTROL_ABSOLUTE, maxVolume, currentVolume) {
-                    boolean isRunning = false;
-                    int presses = 0;
-
-                    final CountDownTimer timer = new CountDownTimer(TimeUnit.SECONDS.toMillis(5), TimeUnit.SECONDS.toMillis(1)) {
-
-                        public void onTick(long millisUntilFinished) {
-                            isRunning = true;
-                            Log.i(MyService.class.getSimpleName(), "seconds remaining: " + millisUntilFinished / 1000);
-                        }
-
-                        public void onFinish() {
-                            if (presses >= 8) {
-                                final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                                vibrator.vibrate(TimeUnit.SECONDS.toMillis(1));
-
-                                if (ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                                        ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                    final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                                    final String provider = locationManager.getBestProvider(criteria, true);
-                                    locationManager.requestSingleUpdate(provider, new LocationListener() {
-                                        @Override
-                                        public void onLocationChanged(Location location) {
-                                            MyService.this.sendAlert(location);
-                                            //MyService.this.showAlert();
-                                            isRunning = false;
-                                            presses = 0;
-                                        }
-
-                                        @Override
-                                        public void onStatusChanged(String provider, int status, Bundle extras) {
-                                        }
-
-                                        @Override
-                                        public void onProviderEnabled(String provider) {
-                                        }
-
-                                        @Override
-                                        public void onProviderDisabled(String provider) {
-                                        }
-                                    }, null);
-                                }
-                            } else {
-                                isRunning = false;
-                                presses = 0;
-                            }
-                        }
-                    };
-
-                    @Override
-                    public void onAdjustVolume(int direction) {
-                        if (AudioManager.ADJUST_LOWER == direction) {
-                            if (!isRunning) {
-                                timer.start();
-                            }
-                            presses++;
-                            audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-                        } else if (AudioManager.ADJUST_RAISE == direction) {
-                            timer.cancel();
-                            audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-                        } else if (AudioManager.ADJUST_SAME == direction) {
-                            audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
-                        }
-                        setCurrentVolume(audio.getStreamVolume(AudioManager.STREAM_MUSIC));
-                    }
-                };
-
-                mediaSession.setPlaybackToRemote(volumeProvider);
-                mediaSession.setActive(true);
+            if (powerManager.isInteractive()) {
+                //screen is on
+                stopVolumeAlert();
+            } else {
+                //screen is off
+                setupVolumeAlert();
             }
         }
+
         return Service.START_STICKY;
+    }
+
+    private void stopVolumeAlert() {
+        if (mediaSession != null) {
+            mediaSession.release(); //do not show remote volume control if screen is on
+        }
+    }
+
+    private void setupVolumeAlert() {
+        final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        final int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
+        final int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        final Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        mediaSession = new MediaSessionCompat(this, MyService.class.getSimpleName());
+        mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSession.setPlaybackState(new PlaybackStateCompat.Builder().setState(PlaybackStateCompat.STATE_PLAYING, 0, 0).build());
+
+        final VolumeProviderCompat volumeProvider = new VolumeProviderCompat(VolumeProviderCompat.VOLUME_CONTROL_ABSOLUTE, maxVolume, currentVolume) {
+            boolean isRunning = false;
+            int presses = 0;
+
+            final CountDownTimer timer = new CountDownTimer(TimeUnit.SECONDS.toMillis(5), TimeUnit.SECONDS.toMillis(1)) {
+
+                public void onTick(long millisUntilFinished) {
+                    isRunning = true;
+                    Log.i(MyService.class.getSimpleName(), "seconds remaining: " + millisUntilFinished / 1000);
+                }
+
+                public void onFinish() {
+                    if (presses >= 8) {
+                        final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        vibrator.vibrate(TimeUnit.SECONDS.toMillis(1));
+
+                        if (ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                                ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                            final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                            final String provider = locationManager.getBestProvider(criteria, true);
+                            locationManager.requestSingleUpdate(provider, new LocationListener() {
+                                @Override
+                                public void onLocationChanged(Location location) {
+                                    MyService.this.sendAlert(location);
+                                    //MyService.this.showAlert();
+                                    isRunning = false;
+                                    presses = 0;
+                                }
+
+                                @Override
+                                public void onStatusChanged(String provider, int status, Bundle extras) {
+                                }
+
+                                @Override
+                                public void onProviderEnabled(String provider) {
+                                }
+
+                                @Override
+                                public void onProviderDisabled(String provider) {
+                                }
+                            }, null);
+                        }
+                    } else {
+                        isRunning = false;
+                        presses = 0;
+                    }
+                }
+            };
+
+            @Override
+            public void onAdjustVolume(int direction) {
+                if (AudioManager.ADJUST_LOWER == direction) {
+                    if (!isRunning) {
+                        timer.start();
+                    }
+                    presses++;
+                    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                } else if (AudioManager.ADJUST_RAISE == direction) {
+                    timer.cancel();
+                    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_RAISE, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                } else if (AudioManager.ADJUST_SAME == direction) {
+                    audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_SAME, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+                }
+                setCurrentVolume(audio.getStreamVolume(AudioManager.STREAM_MUSIC));
+            }
+        };
+
+        mediaSession.setPlaybackToRemote(volumeProvider);
+        mediaSession.setActive(true);
     }
 
     @Override
@@ -215,20 +224,24 @@ public class MyService extends Service {
             Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                     new String[]{contactId}, null, null);
 
-            while (cursor.moveToNext()) {
-                final int typeIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    final int typeIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
 
-                if (ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE == cursor.getInt(typeIndex)) {
-                    final String message = preferences.getString("example_text", "");
-                    final String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                    final SmsManager smsManager = SmsManager.getDefault();
-                    String uri = "http://maps.google.com/maps?q=" + location.getLatitude() + "," + location.getLongitude();
+                    if (ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE == cursor.getInt(typeIndex)) {
+                        final String message = preferences.getString("example_text", "");
+                        final String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                        final SmsManager smsManager = SmsManager.getDefault();
+                        String uri = "http://maps.google.com/maps?q=" + location.getLatitude() + "," + location.getLongitude();
 
-                    smsManager.sendTextMessage(number, null, message + "\n" + uri, null, null);
+                        smsManager.sendTextMessage(number, null, message + "\n" + uri, null, null);
+                    }
+                    //TODO break or send to all mobile numbers?
                 }
-                //TODO break or send to all mobile numbers?
+                cursor.close();
+            } else {
+                Log.e(MyService.class.getSimpleName(), "Cursor is null. Query failed to return a result");
             }
-            cursor.close();
         } else {
             Log.i(MyService.class.getSimpleName(), "Contact preference not set");
         }

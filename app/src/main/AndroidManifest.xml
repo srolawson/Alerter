@@ -11,9 +11,6 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
-    <!-- To access Google+ APIs: -->
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -31,25 +28,20 @@
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".MyReceiver"
-            android:exported="true" />
+        <receiver android:name=".MyReceiver" />
 
         <service
             android:name=".MyService"
-            android:enabled="true"
-            android:exported="true" />
-        <!--
+            android:enabled="true" />
+
         <receiver
             android:name=".MyBootReceiver"
-            android:enabled="true"
-            android:exported="true">
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-        -->
-        <activity android:name=".SystemAlertActivity"></activity>
+
     </application>
 
 </manifest>
