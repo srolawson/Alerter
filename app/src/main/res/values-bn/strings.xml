@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Alerter</string>
+    <string name="pref_header_alert">সতর্কতা</string>
+    <string name="pref_header_notifications">বিজ্ঞপ্তিগুলি</string>
+    <string name="pref_title_volume_alert_switch">ভলিউম বোতাম সতর্কতা সক্ষম করুন</string>
+    <string name="pref_description_volume_alert_switch">ভলিউম ডাউন বোতাম বারবার পর্দা বন্ধ সঙ্গে চাপা হয় যদি একটি সতর্কতা তৈরি করুন।</string>
+    <string name="pref_title_contact">যোগাযোগ</string>
+    <string name="pref_description_contact">না</string>
+    <string name="pref_title_sms_text">বার্তা</string>
+    <string name="pref_default_sms_text">আমি একটু চিন্তিত এবং আপনাকে আমার বর্তমান অবস্থান পাঠাতে চাই:</string>
+    <string name="alert_dialog_title">সতর্কতা</string>
+    <string name="alert_dialog_message">যোগাযোগ একটি মোবাইল নম্বর নেই। অন্য যোগাযোগ চয়ন করুন।</string>
+</resources>

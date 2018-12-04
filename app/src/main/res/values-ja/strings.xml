@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">警告</string>
+    <string name="pref_header_alert">アラート</string>
+    <string name="pref_header_notifications">通知</string>
+    <string name="pref_title_volume_alert_switch">ボリュームボタンアラートを有効にする</string>
+    <string name="pref_description_volume_alert_switch">画面をオフにしたまま音量ボタンを繰り返し押すと、SMSテストを送信します。</string>
+    <string name="pref_title_contact">接触</string>
+    <string name="pref_description_contact">無し</string>
+    <string name="pref_title_sms_text">メッセージ</string>
+    <string name="pref_default_sms_text">私は少し気になり、あなたに私の現在の場所を送りたいと思う：</string>
+    <string name="alert_dialog_title">警告</string>
+    <string name="alert_dialog_message">連絡先に携帯番号がありません。 別の連絡先を選択してください。</string>
+</resources>

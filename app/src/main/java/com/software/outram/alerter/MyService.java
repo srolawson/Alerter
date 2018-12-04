@@ -97,7 +97,7 @@ public class MyService extends Service {
         } else {
             //screen is off
             final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
-            final boolean isVolumeAlertOn = preferences.getBoolean("example_switch", false);
+            final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
             if (isVolumeAlertOn) {
                 setupVolumeAlert();
             }
@@ -211,15 +211,9 @@ public class MyService extends Service {
         unregisterReceiver(myReceiver);
     }
 
-    private void showAlert() {
-        Intent dialogIntent = new Intent(this, SystemAlertActivity.class);
-        dialogIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(dialogIntent);
-    }
-
     private void sendAlert(Location location) {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
-        final String contactId = preferences.getString("contact", "");
+        final String contactId = preferences.getString(SettingsActivity.PREFERENCE_CONTACT, "");
 
         if (!contactId.isEmpty()) {
             Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
@@ -230,14 +224,14 @@ public class MyService extends Service {
                     final int typeIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
 
                     if (ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE == cursor.getInt(typeIndex)) {
-                        final String message = preferences.getString("example_text", "");
+                        final String message = preferences.getString(SettingsActivity.PREFERENCE_SMS_TEXT, "");
                         final String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                         final SmsManager smsManager = SmsManager.getDefault();
                         String uri = "http://maps.google.com/maps?q=" + location.getLatitude() + "," + location.getLongitude();
 
                         smsManager.sendTextMessage(number, null, message + "\n" + uri, null, null);
+                        break;
                     }
-                    //TODO break or send to all mobile numbers?
                 }
                 cursor.close();
             } else {

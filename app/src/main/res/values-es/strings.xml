@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Alertar</string>
+    <string name="pref_header_alert">Alertas</string>
+    <string name="pref_header_notifications">Notificaciones</string>
+    <string name="pref_title_volume_alert_switch">Activar alerta de botón de volumen</string>
+    <string name="pref_description_volume_alert_switch">Enviar prueba de SMS si el botón de volumen se presiona repetidamente con la pantalla apagada.</string>
+    <string name="pref_title_contact">Contacto</string>
+    <string name="pref_description_contact">Ninguna</string>
+    <string name="pref_title_sms_text">Mensaje</string>
+    <string name="pref_default_sms_text">Me siento un poco preocupado y quiero enviarle mi ubicación actual:</string>
+    <string name="alert_dialog_title">Advertencia</string>
+    <string name="alert_dialog_message">El contacto no tiene un número de móvil. Por favor, elija otro contacto.</string>
+</resources>

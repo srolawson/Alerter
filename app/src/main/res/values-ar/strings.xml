@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">التنبيه</string>
+    <string name="pref_header_alert">التنبيهات</string>
+    <string name="pref_header_notifications">إخطارات</string>
+    <string name="pref_title_volume_alert_switch">تمكين زر صوت التنبيه</string>
+    <string name="pref_description_volume_alert_switch">أنشئ تنبيهًا إذا تم الضغط على زر خفض مستوى الصوت بشكل متكرر مع إيقاف تشغيل الشاشة.</string>
+    <string name="pref_title_contact">اتصل</string>
+    <string name="pref_description_contact">لا شيء</string>
+    <string name="pref_title_sms_text">رسالة</string>
+    <string name="pref_default_sms_text">أشعر بالقلق قليلاً وأريد أن أرسل لك موقعي الحالي:</string>
+    <string name="alert_dialog_title">تحذير</string>
+    <string name="alert_dialog_message">لا يحتوي الاتصال على رقم هاتف محمول. يرجى اختيار جهة اتصال أخرى.</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Оповещатель</string>
+    <string name="pref_header_alert">Oповещения</string>
+    <string name="pref_header_notifications">Yведомления</string>
+    <string name="pref_title_volume_alert_switch">Включить предупреждение кнопки громкости</string>
+    <string name="pref_description_volume_alert_switch">Отправьте SMS-тест, если кнопка громкости нажата несколько раз, когда экран выключен.</string>
+    <string name="pref_title_contact">контакт</string>
+    <string name="pref_description_contact">Никто</string>
+    <string name="pref_title_sms_text">Сообщение</string>
+    <string name="pref_default_sms_text">Я немного обеспокоен и хочу отправить вам свое текущее местоположение:</string>
+    <string name="alert_dialog_title">Предупреждение</string>
+    <string name="alert_dialog_message">У контакта нет мобильного номера. Выберите другой контакт.</string>
+</resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Alerter</string>
+    <string name="pref_header_alert">Ostrzeżenia</string>
+    <string name="pref_header_notifications">Powiadomienia</string>
+    <string name="pref_title_volume_alert_switch">Włącz Alert przycisku głośności</string>
+    <string name="pref_description_volume_alert_switch">Wyślij test SMS, jeśli przycisk głośności jest kilkakrotnie naciskany przy wyłączonym ekranie.</string>
+    <string name="pref_title_contact">Kontakt</string>
+    <string name="pref_description_contact">Żaden</string>
+    <string name="pref_title_sms_text">Wiadomość</string>
+    <string name="pref_default_sms_text">Czuję się trochę zaniepokojony i chcę wysłać ci moją obecną lokalizację:</string>
+    <string name="alert_dialog_message">Kontakt nie ma numeru telefonu komórkowego. Wybierz inny kontakt.</string>
+    <string name="alert_dialog_title">Ostrzeżenie</string>
+</resources>

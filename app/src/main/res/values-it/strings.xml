@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Avvisi</string>
+    <string name="pref_header_alert">Avvisi</string>
+    <string name="pref_header_notifications">Notifiche</string>
+    <string name="pref_title_volume_alert_switch">Abilita avviso tasto volume</string>
+    <string name="pref_description_volume_alert_switch">Invia SMS test se il pulsante del volume viene premuto ripetutamente con lo schermo spento.</string>
+    <string name="pref_title_contact">Contatto</string>
+    <string name="pref_description_contact">Nessuna</string>
+    <string name="pref_title_sms_text">Messaggio</string>
+    <string name="pref_default_sms_text">Mi sento un po \'preoccupato e voglio inviarti la mia posizione attuale:</string>
+    <string name="alert_dialog_title">Avvertimento</string>
+    <string name="alert_dialog_message">Il contatto non ha un numero di cellulare. Si prega di scegliere un altro contatto.</string>
+</resources>

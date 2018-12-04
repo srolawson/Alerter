@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Alerter</string>
+    <string name="pref_header_alert">अलर्ट</string>
+    <string name="pref_header_notifications">सूचनाएं</string>
+    <string name="pref_title_volume_alert_switch">वॉल्यूम बटन अलर्ट सक्षम करें</string>
+    <string name="pref_description_volume_alert_switch">स्क्रीन परीक्षण के साथ बार-बार दबाए जाने पर वॉल्यूम बटन को एसएमएस टेस्ट भेजें।</string>
+    <string name="pref_title_contact">संपर्क करें</string>
+    <string name="pref_description_contact">कोई नहीं</string>
+    <string name="pref_title_sms_text">संदेश</string>
+    <string name="pref_default_sms_text">मुझे थोड़ा चिंतित लगता है और आपको अपना वर्तमान स्थान भेजना चाहता हूं:</string>
+    <string name="alert_dialog_title">चेतावनी</string>
+    <string name="alert_dialog_message">संपर्क में मोबाइल नंबर नहीं है। कृपया एक और संपर्क चुनें।</string>
+</resources>

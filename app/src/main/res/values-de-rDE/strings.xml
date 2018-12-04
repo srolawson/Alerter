@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Warner</string>
+    <string name="pref_header_alert">Warnungen</string>
+    <string name="pref_header_notifications">Benachrichtigungen</string>
+    <string name="pref_title_volume_alert_switch">Lautstärketastenalarm aktivieren</string>
+    <string name="pref_description_volume_alert_switch">SMS-Test senden, wenn die Lautstärketaste bei ausgeschaltetem Bildschirm wiederholt gedrückt wird.</string>
+    <string name="pref_title_contact">Kontakt</string>
+    <string name="pref_description_contact">Keiner</string>
+    <string name="pref_title_sms_text">Botschaft</string>
+    <string name="pref_default_sms_text">Ich bin etwas besorgt und möchte Ihnen meinen aktuellen Standort senden:</string>
+    <string name="alert_dialog_title">Warnung</string>
+    <string name="alert_dialog_message">Kontakt hat keine Handynummer. Bitte wählen Sie einen anderen Kontakt.</string>
+</resources>
