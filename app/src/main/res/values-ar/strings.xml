@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">التنبيه</string>
-    <string name="pref_header_alert">التنبيهات</string>
-    <string name="pref_header_notifications">إخطارات</string>
+    <string name="pref_header_notifications">تنبيه الإخطار</string>
     <string name="pref_title_volume_alert_switch">تمكين زر صوت التنبيه</string>
     <string name="pref_description_volume_alert_switch">أنشئ تنبيهًا إذا تم الضغط على زر خفض مستوى الصوت بشكل متكرر مع إيقاف تشغيل الشاشة.</string>
     <string name="pref_title_contact">اتصل</string>
     <string name="pref_description_contact">لا شيء</string>
-    <string name="pref_title_sms_text">رسالة</string>
-    <string name="pref_default_sms_text">أشعر بالقلق قليلاً وأريد أن أرسل لك موقعي الحالي:</string>
+    <string name="pref_title_sms_text">نص</string>
+    <string name="pref_default_sms_text">هذه رسالة تلقائية تم تشغيلها من هاتفي. لقد تم تشغيله لأنني أشعر بالقلق على سلامتي الشخصية. يرجى الاتصال بي عندما يكون ذلك ممكنا.</string>
     <string name="alert_dialog_title">تحذير</string>
     <string name="alert_dialog_message">لا يحتوي الاتصال على رقم هاتف محمول. يرجى اختيار جهة اتصال أخرى.</string>
+    <string name="pref_title_show_location_switch">عرض الموقع في الرسالة</string>
+    <string name="pref_description_show_location_switch">يشير إلى ما إذا كان يجب عرض موقعك في الرسالة</string>
+    <string name="pref_header_volume_alert">حجم التنبيه</string>
+    <string name="pref_title_volume_button_presses">الضغط على الزر لتشغيل التنبيه</string>
+    <string name="pref_header_message">رسالة</string>
+    <string name="pref_title_notification_alert_switch">تمكين تنبيه الإعلام</string>
+    <string name="pref_description_notification_alert_switch">عرض زر على الإخطار لإرسال التنبيه</string>
+    <string name="alert_notification_send_alert">إرسال تنبيه</string>
 </resources>

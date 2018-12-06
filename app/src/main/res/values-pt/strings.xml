@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Alerter</string>
-    <string name="pref_header_alert">Alertas</string>
-    <string name="pref_header_notifications">Notificações</string>
+    <string name="pref_header_notifications">Alerta de Notificação</string>
     <string name="pref_title_volume_alert_switch">Ativar alerta de botão de volume</string>
     <string name="pref_description_volume_alert_switch">Envie um teste de SMS se o botão de volume for pressionado repetidamente com a tela desligada.</string>
     <string name="pref_title_contact">Contato</string>
     <string name="pref_description_contact">Nenhum</string>
-    <string name="pref_title_sms_text">Mensagem</string>
-    <string name="pref_default_sms_text">Sinto-me um pouco preocupado e quero enviar-lhe a minha localização atual:</string>
+    <string name="pref_title_sms_text">Texto</string>
+    <string name="pref_default_sms_text">Esta é uma mensagem automática acionada pelo meu telefone. Foi desencadeada porque me sinto preocupado com minha segurança pessoal. Por favor, me ligue quando for possível.</string>
     <string name="alert_dialog_title">Aviso</string>
     <string name="alert_dialog_message">O contato não possui um número de celular. Por favor, escolha outro contato.</string>
+    <string name="pref_title_show_location_switch">Mostrar localização na mensagem</string>
+    <string name="pref_description_show_location_switch">Indica se sua localização deve ser mostrada na mensagem</string>
+    <string name="pref_header_volume_alert">Alerta de Volume</string>
+    <string name="pref_title_volume_button_presses">Botão pressiona para acionar o alerta</string>
+    <string name="pref_header_message">Mensagem</string>
+    <string name="pref_title_notification_alert_switch">Ativar alerta de notificação</string>
+    <string name="pref_description_notification_alert_switch">Mostrar um botão na notificação para enviar alerta</string>
+    <string name="alert_notification_send_alert">Enviar alerta</string>
 </resources>

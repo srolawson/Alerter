@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Alerter</string>
-    <string name="pref_header_alert">Peringatan</string>
-    <string name="pref_header_notifications">Pemberitahuan</string>
+    <string name="pref_header_notifications">Notifikasi Pemberitahuan</string>
     <string name="pref_title_volume_alert_switch">Aktifkan Peringatan Tombol Volume</string>
     <string name="pref_description_volume_alert_switch">Kirim tes SMS jika tombol volume ditekan berulang kali dengan layar dimatikan.</string>
     <string name="pref_title_contact">Kontak</string>
     <string name="pref_description_contact">Kirim tes SMS jika tombol volume ditekan berulang kali dengan layar dimatikan.</string>
-    <string name="pref_title_sms_text">Pesan</string>
-    <string name="pref_default_sms_text">Saya merasa sedikit khawatir dan ingin mengirim Anda lokasi saya saat ini:</string>
+    <string name="pref_title_sms_text">Teks</string>
+    <string name="pref_default_sms_text">Ini adalah pesan otomatis yang dipicu dari ponsel saya. Itu telah dipicu karena saya merasa prihatin untuk keselamatan pribadi saya. Tolong hubungi saya jika memungkinkan.</string>
     <string name="alert_dialog_title">Peringatan</string>
     <string name="alert_dialog_message">Kontak tidak memiliki nomor ponsel. Silakan pilih kontak lain.</string>
+    <string name="pref_title_show_location_switch">Tampilkan lokasi dalam pesan</string>
+    <string name="pref_description_show_location_switch">Menunjukkan jika lokasi Anda harus ditampilkan dalam pesan</string>
+    <string name="pref_header_volume_alert">Peringatan Volume</string>
+    <string name="pref_title_volume_button_presses">Tombol menekan untuk memicu peringatan</string>
+    <string name="pref_header_message">Pesan</string>
+    <string name="pref_title_notification_alert_switch">Aktifkan Notifikasi Pemberitahuan</string>
+    <string name="pref_description_notification_alert_switch">Tampilkan tombol di notifikasi untuk mengirim peringatan</string>
+    <string name="alert_notification_send_alert">Kirim Siaga</string>
 </resources>

@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Warner</string>
-    <string name="pref_header_alert">Warnungen</string>
-    <string name="pref_header_notifications">Benachrichtigungen</string>
+    <string name="pref_header_notifications">Benachrichtigungsalarm</string>
     <string name="pref_title_volume_alert_switch">Lautstärketastenalarm aktivieren</string>
     <string name="pref_description_volume_alert_switch">SMS-Test senden, wenn die Lautstärketaste bei ausgeschaltetem Bildschirm wiederholt gedrückt wird.</string>
     <string name="pref_title_contact">Kontakt</string>
     <string name="pref_description_contact">Keiner</string>
-    <string name="pref_title_sms_text">Botschaft</string>
-    <string name="pref_default_sms_text">Ich bin etwas besorgt und möchte Ihnen meinen aktuellen Standort senden:</string>
+    <string name="pref_title_sms_text">Text</string>
+    <string name="pref_default_sms_text">Dies ist eine automatisierte Nachricht, die von meinem Telefon ausgelöst wird. Es wurde ausgelöst, weil ich um meine persönliche Sicherheit besorgt bin. Bitte rufen Sie mich an, wenn möglich.</string>
     <string name="alert_dialog_title">Warnung</string>
     <string name="alert_dialog_message">Kontakt hat keine Handynummer. Bitte wählen Sie einen anderen Kontakt.</string>
+    <string name="pref_title_show_location_switch">Standort in der Nachricht anzeigen</string>
+    <string name="pref_description_show_location_switch">Gibt an, ob Ihr Standort in der Nachricht angezeigt werden soll</string>
+    <string name="pref_header_volume_alert">Lautstärkealarm</string>
+    <string name="pref_title_volume_button_presses">Taste drückt, um Alarm auszulösen</string>
+    <string name="pref_header_message">Botschaft</string>
+    <string name="pref_title_notification_alert_switch">Benachrichtigungsalarm aktivieren</string>
+    <string name="pref_description_notification_alert_switch">Zeigt eine Schaltfläche in der Benachrichtigung an, um eine Benachrichtigung zu senden</string>
+    <string name="alert_notification_send_alert">Benachrichtigung senden</string>
 </resources>

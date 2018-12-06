@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Alerter</string>
-    <string name="pref_header_alert">সতর্কতা</string>
-    <string name="pref_header_notifications">বিজ্ঞপ্তিগুলি</string>
+    <string name="pref_header_notifications">বিজ্ঞপ্তি সতর্কতা</string>
     <string name="pref_title_volume_alert_switch">ভলিউম বোতাম সতর্কতা সক্ষম করুন</string>
     <string name="pref_description_volume_alert_switch">ভলিউম ডাউন বোতাম বারবার পর্দা বন্ধ সঙ্গে চাপা হয় যদি একটি সতর্কতা তৈরি করুন।</string>
     <string name="pref_title_contact">যোগাযোগ</string>
     <string name="pref_description_contact">না</string>
-    <string name="pref_title_sms_text">বার্তা</string>
-    <string name="pref_default_sms_text">আমি একটু চিন্তিত এবং আপনাকে আমার বর্তমান অবস্থান পাঠাতে চাই:</string>
+    <string name="pref_title_sms_text">পাঠ</string>
+    <string name="pref_default_sms_text">এটি আমার ফোন থেকে ট্রিগার একটি স্বয়ংক্রিয় বার্তা। এটা আমার ব্যক্তিগত নিরাপত্তার জন্য উদ্বিগ্ন কারণ ট্রিগার হয়েছে। সম্ভব হলে আমাকে কল করুন।</string>
     <string name="alert_dialog_title">সতর্কতা</string>
     <string name="alert_dialog_message">যোগাযোগ একটি মোবাইল নম্বর নেই। অন্য যোগাযোগ চয়ন করুন।</string>
+    <string name="pref_title_show_location_switch">বার্তা অবস্থান প্রদর্শন করুন</string>
+    <string name="pref_description_show_location_switch">আপনার অবস্থান বার্তাতে প্রদর্শিত হবে কিনা তা নির্দেশ করে</string>
+    <string name="pref_header_volume_alert">حجم التنبيه</string>
+    <string name="pref_title_volume_button_presses">সতর্কতা ট্রিগার বাটন প্রেস</string>
+    <string name="pref_header_message">বার্তা</string>
+    <string name="pref_title_notification_alert_switch">বিজ্ঞপ্তি সতর্কতা সক্ষম করুন</string>
+    <string name="pref_description_notification_alert_switch">সতর্কতা পাঠানোর জন্য বিজ্ঞপ্তির একটি বোতাম দেখান</string>
+    <string name="alert_notification_send_alert">সতর্কতা পাঠান</string>
 </resources>

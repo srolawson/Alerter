@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">警报器</string>
-    <string name="pref_header_alert">警报</string>
-    <string name="pref_header_notifications">通知</string>
+    <string name="pref_header_notifications">通知警报</string>
     <string name="pref_title_volume_alert_switch">启用音量按钮警报</string>
     <string name="pref_description_volume_alert_switch">如果在屏幕关闭的情况下反复按下音量按钮，则发送短信测试。</string>
     <string name="pref_title_contact">联系</string>
-    <string name="pref_title_sms_text">信息</string>
-    <string name="pref_default_sms_text">我有点担心，想把你当前的位置寄给你：</string>
+    <string name="pref_title_sms_text">文本</string>
+    <string name="pref_default_sms_text">这是从我的手机触发的自动消息。 它已被触发，因为我对我的人身安全感到担忧。 请尽可能给我打电话。</string>
     <string name="alert_dialog_title">警告</string>
     <string name="alert_dialog_message">联系人没有手机号码。 请选择其他联系人。</string>
     <string name="pref_description_contact">没有</string>
+    <string name="pref_title_show_location_switch">在邮件中包含位置</string>
+    <string name="pref_description_show_location_switch">指示您的位置是否应显示在消息中</string>
+    <string name="pref_header_volume_alert">卷警报</string>
+    <string name="pref_title_volume_button_presses">按下按钮以触发警报</string>
+    <string name="pref_header_message">信息</string>
+    <string name="pref_title_notification_alert_switch">启用通知警报</string>
+    <string name="pref_description_notification_alert_switch">在通知上显示按钮以发送警报</string>
+    <string name="alert_notification_send_alert">发送提醒</string>
 </resources>

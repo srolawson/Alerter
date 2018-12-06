@@ -1,0 +1,18 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="volume_alert_switch"
+        android:summary="@string/pref_description_volume_alert_switch"
+        android:title="@string/pref_title_volume_alert_switch" />
+
+    <ListPreference
+        android:defaultValue="@string/pref_volume_button_medium_presses"
+        android:entries="@array/pref_volume_button_presses_list_titles"
+        android:entryValues="@array/pref_volume_button_presses_list_values"
+        android:key="volume_button_presses_list"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_volume_button_presses" />
+
+</PreferenceScreen>

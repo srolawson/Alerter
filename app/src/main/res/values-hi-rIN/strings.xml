@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Alerter</string>
-    <string name="pref_header_alert">अलर्ट</string>
-    <string name="pref_header_notifications">सूचनाएं</string>
+    <string name="pref_header_notifications">अधिसूचना चेतावनी</string>
     <string name="pref_title_volume_alert_switch">वॉल्यूम बटन अलर्ट सक्षम करें</string>
     <string name="pref_description_volume_alert_switch">स्क्रीन परीक्षण के साथ बार-बार दबाए जाने पर वॉल्यूम बटन को एसएमएस टेस्ट भेजें।</string>
     <string name="pref_title_contact">संपर्क करें</string>
     <string name="pref_description_contact">कोई नहीं</string>
-    <string name="pref_title_sms_text">संदेश</string>
-    <string name="pref_default_sms_text">मुझे थोड़ा चिंतित लगता है और आपको अपना वर्तमान स्थान भेजना चाहता हूं:</string>
+    <string name="pref_title_sms_text">टेक्स्ट</string>
+    <string name="pref_default_sms_text">यह एक स्वचालित संदेश है जो मेरे फोन से ट्रिगर हुआ है। यह ट्रिगर किया गया है क्योंकि मैं अपनी व्यक्तिगत सुरक्षा के लिए चिंतित हूं। कृपया जब संभव हो मुझे कॉल करें।</string>
     <string name="alert_dialog_title">चेतावनी</string>
     <string name="alert_dialog_message">संपर्क में मोबाइल नंबर नहीं है। कृपया एक और संपर्क चुनें।</string>
+    <string name="pref_title_show_location_switch">संदेश में स्थान दिखाएं</string>
+    <string name="pref_description_show_location_switch">इंगित करता है कि संदेश में आपका स्थान दिखाना चाहिए या नहीं</string>
+    <string name="pref_header_volume_alert">वॉल्यूम अलर्ट</string>
+    <string name="pref_title_volume_button_presses">चेतावनी ट्रिगर करने के लिए बटन दबाता है</string>
+    <string name="pref_header_message">संदेश</string>
+    <string name="pref_title_notification_alert_switch">अधिसूचना अलर्ट सक्षम करें</string>
+    <string name="pref_description_notification_alert_switch">अलर्ट भेजने के लिए अधिसूचना पर एक बटन दिखाएं</string>
+    <string name="alert_notification_send_alert">अलर्ट भेजें</string>
 </resources>

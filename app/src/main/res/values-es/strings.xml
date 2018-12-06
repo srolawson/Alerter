@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Alertar</string>
-    <string name="pref_header_alert">Alertas</string>
-    <string name="pref_header_notifications">Notificaciones</string>
+    <string name="pref_header_notifications">Alerta de notificación</string>
     <string name="pref_title_volume_alert_switch">Activar alerta de botón de volumen</string>
     <string name="pref_description_volume_alert_switch">Enviar prueba de SMS si el botón de volumen se presiona repetidamente con la pantalla apagada.</string>
     <string name="pref_title_contact">Contacto</string>
     <string name="pref_description_contact">Ninguna</string>
-    <string name="pref_title_sms_text">Mensaje</string>
-    <string name="pref_default_sms_text">Me siento un poco preocupado y quiero enviarle mi ubicación actual:</string>
+    <string name="pref_title_sms_text">Texto</string>
+    <string name="pref_default_sms_text">Este es un mensaje automatizado que se activa desde mi teléfono. Se ha activado porque me preocupa mi seguridad personal. Por favor llámame cuando sea posible.</string>
     <string name="alert_dialog_title">Advertencia</string>
     <string name="alert_dialog_message">El contacto no tiene un número de móvil. Por favor, elija otro contacto.</string>
+    <string name="pref_title_show_location_switch">Mostrar ubicación en el mensaje</string>
+    <string name="pref_description_show_location_switch">Indica si su ubicación debe aparecer en el mensaje.</string>
+    <string name="pref_header_volume_alert">Alerta de volumen</string>
+    <string name="pref_title_volume_button_presses">Presiona el botón para activar la alerta</string>
+    <string name="pref_header_message">Mensaje</string>
+    <string name="pref_title_notification_alert_switch">Habilitar alerta de notificación</string>
+    <string name="pref_description_notification_alert_switch">Mostrar un botón en la notificación para enviar alerta</string>
+    <string name="alert_notification_send_alert">Enviar Alerta</string>
 </resources>

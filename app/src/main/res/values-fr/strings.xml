@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Alerter</string>
-    <string name="pref_header_alert">Alertes</string>
-    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_header_notifications">Alerte de notification</string>
     <string name="pref_title_volume_alert_switch">Activer l\'alerte du bouton de volume</string>
     <string name="pref_description_volume_alert_switch">Envoyez un test SMS si vous appuyez plusieurs fois sur le bouton de volume et que l\'écran est éteint.</string>
     <string name="pref_title_contact">Contact</string>
     <string name="pref_description_contact">Aucun</string>
-    <string name="pref_default_sms_text">Je me sens un peu inquiet et je veux vous envoyer ma position actuelle:</string>
-    <string name="pref_title_sms_text">Message</string>
+    <string name="pref_default_sms_text">Ceci est un message automatisé déclenché depuis mon téléphone. Cela a été déclenché parce que je me sens concerné par ma sécurité personnelle. S\'il vous plaît appelez-moi quand possible.</string>
+    <string name="pref_title_sms_text">Texte</string>
     <string name="alert_dialog_message">Le contact n\'a pas de numéro de portable. Veuillez choisir un autre contact.</string>
     <string name="alert_dialog_title">Attention</string>
+    <string name="pref_title_show_location_switch">Afficher l\'emplacement dans le message</string>
+    <string name="pref_description_show_location_switch">Indique si votre position doit apparaître dans le message</string>
+    <string name="pref_header_volume_alert">Alerte de volume</string>
+    <string name="pref_title_volume_button_presses">Bouton enfoncé pour déclencher une alerte</string>
+    <string name="pref_header_message">Message</string>
+    <string name="pref_title_notification_alert_switch">Activer l\'alerte de notification</string>
+    <string name="pref_description_notification_alert_switch">Afficher un bouton sur la notification pour envoyer une alerte</string>
+    <string name="alert_notification_send_alert">Envoyer une alerte</string>
 </resources>

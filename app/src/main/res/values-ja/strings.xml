@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">警告</string>
-    <string name="pref_header_alert">アラート</string>
-    <string name="pref_header_notifications">通知</string>
+    <string name="pref_header_notifications">通知アラート</string>
     <string name="pref_title_volume_alert_switch">ボリュームボタンアラートを有効にする</string>
     <string name="pref_description_volume_alert_switch">画面をオフにしたまま音量ボタンを繰り返し押すと、SMSテストを送信します。</string>
     <string name="pref_title_contact">接触</string>
     <string name="pref_description_contact">無し</string>
-    <string name="pref_title_sms_text">メッセージ</string>
-    <string name="pref_default_sms_text">私は少し気になり、あなたに私の現在の場所を送りたいと思う：</string>
+    <string name="pref_title_sms_text">テキスト</string>
+    <string name="pref_default_sms_text">これは私の電話機からトリガされた自動メッセージです。 私は私の個人的な安全を心配しているので、それが引き起こされています。 可能であれば私に電話してください。</string>
     <string name="alert_dialog_title">警告</string>
     <string name="alert_dialog_message">連絡先に携帯番号がありません。 別の連絡先を選択してください。</string>
+    <string name="pref_title_show_location_switch">メッセージの場所を表示する</string>
+    <string name="pref_description_show_location_switch">あなたの場所をメッセージに表示するかどうかを示します</string>
+    <string name="pref_header_volume_alert">ボリュームアラート</string>
+    <string name="pref_title_volume_button_presses">ボタンが押されてアラートが発生する</string>
+    <string name="pref_header_message">メッセージ</string>
+    <string name="pref_title_notification_alert_switch">通知アラートを有効にする</string>
+    <string name="pref_description_notification_alert_switch">アラートを送信する通知にボタンを表示する</string>
+    <string name="alert_notification_send_alert">アラートを送信</string>
 </resources>

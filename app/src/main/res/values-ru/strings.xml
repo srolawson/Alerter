@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Оповещатель</string>
-    <string name="pref_header_alert">Oповещения</string>
-    <string name="pref_header_notifications">Yведомления</string>
+    <string name="pref_header_notifications">Уведомление о оповещении</string>
     <string name="pref_title_volume_alert_switch">Включить предупреждение кнопки громкости</string>
     <string name="pref_description_volume_alert_switch">Отправьте SMS-тест, если кнопка громкости нажата несколько раз, когда экран выключен.</string>
     <string name="pref_title_contact">контакт</string>
     <string name="pref_description_contact">Никто</string>
-    <string name="pref_title_sms_text">Сообщение</string>
-    <string name="pref_default_sms_text">Я немного обеспокоен и хочу отправить вам свое текущее местоположение:</string>
+    <string name="pref_title_sms_text">ਟੈਕਸਟ</string>
+    <string name="pref_default_sms_text">Это автоматическое сообщение, вызванное с моего телефона. Это было вызвано, потому что я чувствую себя обеспокоенным своей личной безопасностью. Пожалуйста, позвоните мне, когда это возможно.</string>
     <string name="alert_dialog_title">Предупреждение</string>
     <string name="alert_dialog_message">У контакта нет мобильного номера. Выберите другой контакт.</string>
+    <string name="pref_title_show_location_switch">Показать местоположение в сообщении</string>
+    <string name="pref_description_show_location_switch">Указывает, должно ли ваше местоположение отображаться в сообщении</string>
+    <string name="pref_header_volume_alert">Оповещение о громкости</string>
+    <string name="pref_title_volume_button_presses">Кнопка нажимает для запуска предупреждения</string>
+    <string name="pref_header_message">Сообщение</string>
+    <string name="pref_title_notification_alert_switch">Включить оповещение уведомления</string>
+    <string name="pref_description_notification_alert_switch">Показывать кнопку в уведомлении для отправки оповещения</string>
+    <string name="alert_notification_send_alert">Отправить оповещение</string>
 </resources>

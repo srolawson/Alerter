@@ -13,4 +13,10 @@
         android:selectAllOnFocus="true"
         android:title="@string/pref_title_sms_text" />
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="show_location_switch"
+        android:summary="@string/pref_description_show_location_switch"
+        android:title="@string/pref_title_show_location_switch" />
+
 </PreferenceScreen>

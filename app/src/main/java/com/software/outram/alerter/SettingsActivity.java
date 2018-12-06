@@ -43,11 +43,13 @@ import java.util.List;
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-    static final int SERVICE_PERMISSION_REQUEST_CODE = 1;
-
     public static final String PREFERENCE_VOLUME_SWITCH = "volume_alert_switch";
+    public static final String PREFERENCE_SHOW_LOCATION_SWITCH = "show_location_switch";
     public static final String PREFERENCE_CONTACT = "contact";
     public static final String PREFERENCE_SMS_TEXT = "sms_text";
+    public static final String PREFERENCE_VOLUME_BUTTON_PRESSES = "volume_button_presses_list";
+    public static final String PREFERENCE_NOTIFICATION_SWITCH = "notification_alert_switch";
+    static final int SERVICE_PERMISSION_REQUEST_CODE = 1;
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.
@@ -96,6 +98,25 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 preference.setSummary(stringValue);
             }
             return true;
+        }
+    };
+
+    SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            final Intent intent = new Intent(getApplicationContext(), MyService.class);
+
+            if (PREFERENCE_VOLUME_SWITCH.equals(key) || (PREFERENCE_NOTIFICATION_SWITCH.equals(key))) {
+                final boolean volumeSwitch = prefs.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
+                final boolean notificationSwitch = prefs.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, false);
+
+                if (volumeSwitch || notificationSwitch) {
+                    intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
+                } else {
+                    intent.putExtra(MyService.STOP_FOREGROUND_ACTION, true);
+                }
+            }
+
+            getApplicationContext().startService(intent);
         }
     };
 
@@ -148,7 +169,33 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         if (!permissionsNeeded.isEmpty()) {
             final String[] permissionsToGrant = permissionsNeeded.toArray(new String[permissionsNeeded.size()]);
             ActivityCompat.requestPermissions(this, permissionsToGrant, SERVICE_PERMISSION_REQUEST_CODE);
+        } else {
+            notifyForegroundService();
         }
+    }
+
+    private void notifyForegroundService() {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        final boolean isVolumeAlertOn = preferences.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
+        final boolean isNotificationAlertOn = preferences.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, false);
+
+        if (isVolumeAlertOn || isNotificationAlertOn) {
+            Intent intent = new Intent(getApplicationContext(), MyService.class);
+            intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
+            startService(intent);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).registerOnSharedPreferenceChangeListener(sharedPreferenceListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).unregisterOnSharedPreferenceChangeListener(sharedPreferenceListener);
     }
 
     @Override
@@ -195,7 +242,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      */
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
-                || GeneralPreferenceFragment.class.getName().equals(fragmentName)
+                || VolumePreferenceFragment.class.getName().equals(fragmentName)
+                || MessagePreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName);
     }
 
@@ -211,18 +259,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     permissionsGranted = false;
                 }
             }
+
             final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
             if (permissionsGranted) {
-                boolean isVolumeAlertOn = preferences.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
-
-                if (isVolumeAlertOn) {
-                    Intent intent = new Intent(getApplicationContext(), MyService.class);
-                    intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
-                    startService(intent);
-                }
+                notifyForegroundService();
             } else {
                 preferences.edit().putBoolean(PREFERENCE_VOLUME_SWITCH, false).commit(); //force to off if permission(s) not granted
+                preferences.edit().putBoolean(PREFERENCE_NOTIFICATION_SWITCH, false).commit(); //force to off if permission(s) not granted
                 Intent intent = new Intent(getApplicationContext(), MyService.class);
                 stopService(intent);
             }
@@ -230,37 +274,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * This fragment shows general preferences only. It is used when the
+     * This fragment shows volume preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class GeneralPreferenceFragment extends PreferenceFragment {
+    public static class VolumePreferenceFragment extends PreferenceFragment {
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_alerts);
+            addPreferencesFromResource(R.xml.pref_volume_alert);
             setHasOptionsMenu(true);
-
-            // Bind the summaries of EditText/List/Dialog/Ringtone preferences
-            // to their values. When their values change, their summaries are
-            // updated to reflect the new value, per the Android Design
-            // guidelines.
-
-            Preference volumeServicePreference = findPreference(PREFERENCE_VOLUME_SWITCH);
-            volumeServicePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object newValue) {
-                    Intent intent = new Intent(preference.getContext().getApplicationContext(), MyService.class);
-                    if (!(Boolean) newValue) {
-                        intent.putExtra(MyService.STOP_FOREGROUND_ACTION, true);
-                    } else {
-                        intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
-                    }
-                    preference.getContext().startService(intent);
-                    return true;
-                }
-            });
         }
 
         @Override
@@ -280,18 +304,18 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     /**
-     * This fragment shows notification preferences only. It is used when the
+     * This fragment shows message preferences only. It is used when the
      * activity is showing a two-pane settings UI.
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class NotificationPreferenceFragment extends PreferenceFragment {
+    public static class MessagePreferenceFragment extends PreferenceFragment {
 
         static final int PICK_CONTACT_REQUEST = 1;
 
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_notification);
+            addPreferencesFromResource(R.xml.pref_message);
             setHasOptionsMenu(true);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
@@ -302,6 +326,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             bindPreferenceSummaryToValue(findPreference(PREFERENCE_CONTACT));
 
             Preference contactPicker = findPreference(PREFERENCE_CONTACT);
+
             contactPicker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
@@ -378,4 +403,30 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return super.onOptionsItemSelected(item);
         }
     }
+
+    /**
+     * This fragment shows notification preferences only. It is used when the
+     * activity is showing a two-pane settings UI.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class NotificationPreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_notification_alert);
+            setHasOptionsMenu(true);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
 }

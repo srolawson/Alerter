@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Alerter</string>
 
-    <string name="pref_header_alert">Alerts</string>
-    <string name="pref_header_notifications">Notifications</string>
+    <string name="pref_header_volume_alert">Volume Alert</string>
+    <string name="pref_header_notifications">Notification Alert</string>
 
     <string name="pref_title_volume_alert_switch">Enable Volume Button Alert</string>
     <string name="pref_description_volume_alert_switch">Create an alert if the volume button is pressed repeatedly with the screen turned off</string>
@@ -10,10 +10,35 @@
     <string name="pref_title_contact">Contact</string>
     <string name="pref_description_contact">None</string>
 
-    <string name="pref_title_sms_text">Message</string>
-    <string name="pref_default_sms_text">I feel a little concerned and want to send you my current location:</string>
+    <string name="pref_title_sms_text">Text</string>
+    <string name="pref_default_sms_text">This is an automated message triggered from my phone. It has been triggered because I feel concerned for my personal safety. Please call me when possible.</string>
 
     <string name="alert_dialog_title">Warning</string>
     <string name="alert_dialog_message">Contact does not have a mobile number. Please choose another contact.</string>
+    <string name="pref_title_show_location_switch">Show location in message</string>
+    <string name="pref_description_show_location_switch">Indicates if your location should be shown in the message</string>
+
+    <string name="pref_title_volume_button_presses">Button presses to trigger alert</string>
+
+    <string name="pref_volume_button_small_presses" translatable="false">4</string>
+    <string name="pref_volume_button_medium_presses" translatable="false">8</string>
+    <string name="pref_volume_button_large_presses" translatable="false">12</string>
+
+
+    <string-array name="pref_volume_button_presses_list_titles">
+        <item>@string/pref_volume_button_small_presses</item>
+        <item>@string/pref_volume_button_medium_presses</item>
+        <item>@string/pref_volume_button_large_presses</item>
+    </string-array>
+
+    <string-array name="pref_volume_button_presses_list_values">
+        <item>4</item>
+        <item>8</item>
+        <item>12</item>
+    </string-array>
+    <string name="pref_header_message">Message</string>
+    <string name="pref_title_notification_alert_switch">Enable Notification Alert</string>
+    <string name="pref_description_notification_alert_switch">Show a button on the notification to send alert</string>
+    <string name="alert_notification_send_alert">Send Alert</string>
 
 </resources>

@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Avvisi</string>
-    <string name="pref_header_alert">Avvisi</string>
-    <string name="pref_header_notifications">Notifiche</string>
+    <string name="pref_header_notifications">Avviso di notifica</string>
     <string name="pref_title_volume_alert_switch">Abilita avviso tasto volume</string>
     <string name="pref_description_volume_alert_switch">Invia SMS test se il pulsante del volume viene premuto ripetutamente con lo schermo spento.</string>
     <string name="pref_title_contact">Contatto</string>
     <string name="pref_description_contact">Nessuna</string>
-    <string name="pref_title_sms_text">Messaggio</string>
-    <string name="pref_default_sms_text">Mi sento un po \'preoccupato e voglio inviarti la mia posizione attuale:</string>
+    <string name="pref_title_sms_text">Testo</string>
+    <string name="pref_default_sms_text">Questo è un messaggio automatico attivato dal mio telefono. È stato attivato perché mi sento preoccupato per la mia sicurezza personale. Per favore chiamami quando è possibile.</string>
     <string name="alert_dialog_title">Avvertimento</string>
     <string name="alert_dialog_message">Il contatto non ha un numero di cellulare. Si prega di scegliere un altro contatto.</string>
+    <string name="pref_title_show_location_switch">Mostra posizione nel messaggio</string>
+    <string name="pref_description_show_location_switch">Indica se la tua posizione dovrebbe essere mostrata nel messaggio</string>
+    <string name="pref_header_volume_alert">Avviso volume</string>
+    <string name="pref_title_volume_button_presses">Il pulsante preme per attivare l\'avviso</string>
+    <string name="pref_header_message">Messaggio</string>
+    <string name="pref_title_notification_alert_switch">Abilita avviso di notifica</string>
+    <string name="pref_description_notification_alert_switch">Mostra un pulsante sulla notifica per inviare un avviso</string>
+    <string name="alert_notification_send_alert">Invia avviso</string>
 </resources>

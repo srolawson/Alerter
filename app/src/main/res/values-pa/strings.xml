@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">ਅਲਟਰਟਰ</string>
-    <string name="pref_header_alert">ਚੇਤਾਵਨੀਆਂ</string>
-    <string name="pref_header_notifications">ਸੂਚਨਾਵਾਂ</string>
+    <string name="pref_header_notifications">ਸੂਚਨਾ ਅਲਰਟ</string>
     <string name="pref_title_volume_alert_switch">ਵੌਲਯੂਮ ਬਟਨ ਚਿਤਾਵਨੀ ਨੂੰ ਸਮਰੱਥ ਬਣਾਓ</string>
     <string name="pref_description_volume_alert_switch">ਜੇ ਸਕ੍ਰੀਨ ਬੰਦ ਹੋਣ ਤੇ ਵਾਰ-ਵਾਰ ਬਟਨ ਦਾ ਬਟਨ ਦਬਾ ਦਿੱਤਾ ਗਿਆ ਹੈ ਤਾਂ SMS ਟੈਸਟ ਭੇਜੋ.</string>
     <string name="pref_title_contact">ਸੰਪਰਕ ਕਰੋ</string>
     <string name="pref_description_contact">ਕੋਈ ਨਹੀਂ</string>
     <string name="pref_title_sms_text">ਸੁਨੇਹਾ</string>
-    <string name="pref_default_sms_text">ਮੈਂ ਥੋੜਾ ਚਿੰਤਤ ਮਹਿਸੂਸ ਕਰਦਾ ਹਾਂ ਅਤੇ ਤੁਹਾਨੂੰ ਮੇਰੇ ਮੌਜੂਦਾ ਸਥਾਨ ਨੂੰ ਭੇਜਣਾ ਚਾਹੁੰਦਾ ਹਾਂ:</string>
+    <string name="pref_default_sms_text">ਇਹ ਇੱਕ ਆਟੋਮੈਟਿਕ ਸੁਨੇਹਾ ਹੈ ਜੋ ਮੇਰੇ ਫੋਨ ਤੋਂ ਸ਼ੁਰੂ ਹੋਇਆ ਹੈ. ਇਹ ਸ਼ੁਰੂ ਹੋ ਚੁੱਕਾ ਹੈ ਕਿਉਂਕਿ ਮੈਂ ਆਪਣੀ ਨਿੱਜੀ ਸੁਰੱਖਿਆ ਲਈ ਚਿੰਤਤ ਹਾਂ. ਕਿਰਪਾ ਕਰਕੇ ਮੈਨੂੰ ਕਾਲ ਕਰੋ ਜਦੋਂ ਸੰਭਵ ਹੋਵੇ</string>
     <string name="alert_dialog_title">ਚੇਤਾਵਨੀ</string>
     <string name="alert_dialog_message">ਸੰਪਰਕ ਕੋਲ ਮੋਬਾਈਲ ਨੰਬਰ ਨਹੀਂ ਹੈ ਕਿਰਪਾ ਕਰਕੇ ਕੋਈ ਹੋਰ ਸੰਪਰਕ ਚੁਣੋ.</string>
+    <string name="pref_title_show_location_switch">ਸੁਨੇਹੇ ਵਿੱਚ ਨਿਰਧਾਰਿਤ ਸਥਾਨ ਦਿਖਾਓ</string>
+    <string name="pref_description_show_location_switch">ਦਰਸਾਉਂਦਾ ਹੈ ਕਿ ਤੁਹਾਡਾ ਸਥਾਨ ਸੰਦੇਸ਼ ਵਿੱਚ ਦਿਖਾਇਆ ਜਾਣਾ ਚਾਹੀਦਾ ਹੈ</string>
+    <string name="pref_header_volume_alert">ਵਾਲੀਅਮ ਅਲਰਟ</string>
+    <string name="pref_title_volume_button_presses">ਸਚੇਤ ਕਰਨ ਲਈ ਬਟਨ ਦਬਾਓ</string>
+    <string name="pref_header_message">ਸੁਨੇਹਾ</string>
+    <string name="pref_title_notification_alert_switch">ਨੋਟੀਫਿਕੇਸ਼ਨ ਚੇਤਾਵਨੀ ਨੂੰ ਯੋਗ ਕਰੋ</string>
+    <string name="pref_description_notification_alert_switch">ਚੇਤਾਵਨੀ ਭੇਜਣ ਲਈ ਨੋਟੀਫਿਕੇਸ਼ਨ ਉੱਤੇ ਇੱਕ ਬਟਨ ਦਿਖਾਓ</string>
+    <string name="alert_notification_send_alert">ਚਿਤਾਵਨੀ ਭੇਜੋ</string>
 </resources>
