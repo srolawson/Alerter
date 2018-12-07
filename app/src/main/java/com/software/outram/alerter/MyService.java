@@ -170,7 +170,7 @@ public class MyService extends Service {
         mediaSession.setPlaybackState(new PlaybackStateCompat.Builder().setState(PlaybackStateCompat.STATE_PLAYING, 0, 0).build());
 
         final VolumeProviderCompat volumeProvider = new VolumeProviderCompat(VolumeProviderCompat.VOLUME_CONTROL_ABSOLUTE, maxVolume, currentVolume) {
-            final int duration = maxVolumePresses / 2; // gives the use 500ms per click
+            final int duration = maxVolumePresses / 2; // gives the user 500ms per press of the volume button
             boolean isRunning = false;
             int presses = 0;
             final CountDownTimer timer = new CountDownTimer(TimeUnit.SECONDS.toMillis(duration), TimeUnit.SECONDS.toMillis(1)) {
@@ -193,7 +193,7 @@ public class MyService extends Service {
                                 locationManager.requestSingleUpdate(provider, new LocationListener() {
                                     @Override
                                     public void onLocationChanged(Location location) {
-                                        final String uri = "http://maps.google.com/maps?q=" + location.getLatitude() + "," + location.getLongitude();
+                                        final String uri = "http://maps.google.com/maps?query=" + location.getLatitude() + "," + location.getLongitude();
                                         MyService.this.sendAlert(uri);
                                         isRunning = false;
                                         presses = 0;
