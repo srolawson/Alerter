@@ -17,5 +17,8 @@
     <string name="pref_header_message">ਸੁਨੇਹਾ</string>
     <string name="pref_title_notification_alert_switch">ਨੋਟੀਫਿਕੇਸ਼ਨ ਚੇਤਾਵਨੀ ਨੂੰ ਯੋਗ ਕਰੋ</string>
     <string name="pref_description_notification_alert_switch">ਚੇਤਾਵਨੀ ਭੇਜਣ ਲਈ ਨੋਟੀਫਿਕੇਸ਼ਨ ਉੱਤੇ ਇੱਕ ਬਟਨ ਦਿਖਾਓ</string>
-    <string name="alert_notification_send_alert">ਚਿਤਾਵਨੀ ਭੇਜੋ</string>
+    <string name="pref_title_headset_alert_switch">Ativar alerta de fone de ouvido</string>
+    <string name="pref_header_headset">ਹੈਡਸੈਟ ਅਲਰਟ</string>
+    <string name="notification_content_title">ਅਲਟਰਟਰ ਸੇਵਾ ਚੱਲ ਰਹੀ ਹੈ</string>
+    <string name="notification_content_text">ਸੁਰੱਖਿਆ ਚੇਤਾਵਨੀ ਭੇਜਣ ਲਈ ਟੈਪ ਕਰੋ</string>
 </resources>

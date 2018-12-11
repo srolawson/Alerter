@@ -17,5 +17,8 @@
     <string name="pref_header_message">বার্তা</string>
     <string name="pref_title_notification_alert_switch">বিজ্ঞপ্তি সতর্কতা সক্ষম করুন</string>
     <string name="pref_description_notification_alert_switch">সতর্কতা পাঠানোর জন্য বিজ্ঞপ্তির একটি বোতাম দেখান</string>
-    <string name="alert_notification_send_alert">সতর্কতা পাঠান</string>
+    <string name="pref_title_headset_alert_switch">হেডসেট সতর্কতা সক্ষম করুন</string>
+    <string name="pref_header_headset">হেডসেট সতর্কতা</string>
+    <string name="notification_content_title">Alterter সেবা চলমান</string>
+    <string name="notification_content_text">নিরাপত্তা সতর্কতা পাঠাতে আলতো চাপুন</string>
 </resources>

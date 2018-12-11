@@ -43,8 +43,22 @@ public class MyService extends Service {
     public static String START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION";
     public static String STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION";
     public static String SEND_ALERT_ACTION = "SEND_ALERT_ACTION";
+    public static String HEADSET_UNPLUGGED_ACTION = "HEADSET_UNPLUGGED_ACTION";
     private final MyReceiver myReceiver = new MyReceiver();
     private MediaSessionCompat mediaSession;
+
+    final CountDownTimer timer = new CountDownTimer(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(1)) {
+
+        public void onTick(long millisUntilFinished) {
+        }
+
+        public void onFinish() {
+            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            if (!audioManager.isWiredHeadsetOn()) {
+                sendAlert();
+            }
+        }
+    };
 
     public MyService() {
     }
@@ -63,10 +77,10 @@ public class MyService extends Service {
     @RequiresApi(Build.VERSION_CODES.O)
     private String createNotificationChannel() {
         final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        final String channelId = "alert_service_channelid";
-        final String channelName = "Alert Service";
-        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_LOW);
-        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        final String channelId = "alerter_service_channelid";
+        final String channelName = getString(R.string.app_name) + " Service";
+        NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         notificationManager.createNotificationChannel(channel);
         return channelId;
     }
@@ -75,80 +89,66 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final boolean showNotification = preferences.getBoolean(SettingsActivity.PREFERENCE_NOTIFICATION_SWITCH, true);
+        final NotificationCompat.Builder notificationBuilder = createNotification();
 
         if (intent.getBooleanExtra(STOP_FOREGROUND_ACTION, false)) {
             stopForeground(true);
         } else if (intent.getBooleanExtra(START_FOREGROUND_ACTION, false)) {
-            final Intent sendAlertIntent = new Intent(this, MyService.class);
-            sendAlertIntent.putExtra(SEND_ALERT_ACTION, true);
-            final PendingIntent sendAlertPendingIntent = PendingIntent.getService(this, 0, sendAlertIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            final boolean showNotification = preferences.getBoolean(SettingsActivity.PREFERENCE_NOTIFICATION_SWITCH, true);
-            final String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
-            final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
             if (showNotification) {
-                notificationBuilder.setWhen(0);
-                notificationBuilder.addAction(R.drawable.ic_send_alert, getString(R.string.alert_notification_send_alert), sendAlertPendingIntent);
+                final Intent sendAlertConfirmIntent = new Intent(this, MyService.class);
+                sendAlertConfirmIntent.putExtra(SEND_ALERT_ACTION, true);
+
+                final PendingIntent sendAlertConfirmPendingIntent =
+                        PendingIntent.getService(this, 0, sendAlertConfirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                notificationBuilder.setContentIntent(sendAlertConfirmPendingIntent);
+                notificationBuilder.setContentText(getString(R.string.notification_content_text));
             }
-
-            Notification notification = notificationBuilder.setOngoing(true)
-                    .setSmallIcon(R.drawable.ic_stat_name)
-                    .setAutoCancel(false)
-                    .setOngoing(true)
-                    .setVisibility(showNotification ? NotificationCompat.VISIBILITY_PUBLIC : NotificationCompat.VISIBILITY_SECRET)
-                    .setPriority(NotificationCompat.PRIORITY_HIGH)
-                    .build();
-            startForeground(ID_SERVICE, notification);
-        }
-
-        if (intent.getBooleanExtra(SEND_ALERT_ACTION, false)) {
-
-            if (preferences.getBoolean(SettingsActivity.PREFERENCE_SHOW_LOCATION_SWITCH, true)) {
-                if (ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                        ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                    final Criteria criteria = new Criteria();
-                    criteria.setAccuracy(Criteria.ACCURACY_FINE);
-                    final String provider = locationManager.getBestProvider(criteria, true);
-                    locationManager.requestSingleUpdate(provider, new LocationListener() {
-                        @Override
-                        public void onLocationChanged(Location location) {
-                            final String uri = "http://maps.google.com/maps?q=" + location.getLatitude() + "," + location.getLongitude();
-                            MyService.this.sendAlert(uri);
-                        }
-
-                        @Override
-                        public void onStatusChanged(String provider, int status, Bundle extras) {
-                        }
-
-                        @Override
-                        public void onProviderEnabled(String provider) {
-                        }
-
-                        @Override
-                        public void onProviderDisabled(String provider) {
-                        }
-                    }, null);
-                }
-            } else {
-                sendAlert("");
-            }
+            startForeground(ID_SERVICE, notificationBuilder.build());
         }
 
         final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
 
         if (powerManager.isInteractive()) {
-            //screen is on
             stopVolumeAlert();
         } else {
-            //screen is off
             final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
             if (isVolumeAlertOn) {
                 setupVolumeAlert();
             }
         }
 
+        if (intent.getBooleanExtra(SEND_ALERT_ACTION, false)) {
+            sendAlert();
+        }
+
+        if (powerManager.isInteractive()) {
+            timer.cancel();
+        } else {
+            final boolean isHeadsetAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_HEADSET_SWITCH, true);
+            final boolean isHeadsetAlertActionOn = intent.getBooleanExtra(HEADSET_UNPLUGGED_ACTION, false);
+
+            if (isHeadsetAlertOn && isHeadsetAlertActionOn) {
+                timer.start();
+            }
+        }
+
         return Service.START_STICKY;
+    }
+
+    private NotificationCompat.Builder createNotification() {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
+        final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
+
+        return notificationBuilder.setOngoing(true)
+                .setContentTitle(getString(R.string.notification_content_title))
+                .setSmallIcon(R.drawable.ic_stat_name)
+                .setAutoCancel(false)
+                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE);
     }
 
     private void stopVolumeAlert() {
@@ -163,8 +163,6 @@ public class MyService extends Service {
         final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         final int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         final int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        final Criteria criteria = new Criteria();
-        criteria.setAccuracy(Criteria.ACCURACY_FINE);
         mediaSession = new MediaSessionCompat(this, MyService.class.getSimpleName());
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setPlaybackState(new PlaybackStateCompat.Builder().setState(PlaybackStateCompat.STATE_PLAYING, 0, 0).build());
@@ -182,43 +180,10 @@ public class MyService extends Service {
 
                 public void onFinish() {
                     if (presses >= maxVolumePresses) {
-                        final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        vibrator.vibrate(TimeUnit.SECONDS.toMillis(1));
-
-                        if (preferences.getBoolean(SettingsActivity.PREFERENCE_SHOW_LOCATION_SWITCH, true)) {
-                            if (ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                                    ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                                final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-                                final String provider = locationManager.getBestProvider(criteria, true);
-                                locationManager.requestSingleUpdate(provider, new LocationListener() {
-                                    @Override
-                                    public void onLocationChanged(Location location) {
-                                        final String uri = "http://maps.google.com/maps?query=" + location.getLatitude() + "," + location.getLongitude();
-                                        MyService.this.sendAlert(uri);
-                                        isRunning = false;
-                                        presses = 0;
-                                    }
-
-                                    @Override
-                                    public void onStatusChanged(String provider, int status, Bundle extras) {
-                                    }
-
-                                    @Override
-                                    public void onProviderEnabled(String provider) {
-                                    }
-
-                                    @Override
-                                    public void onProviderDisabled(String provider) {
-                                    }
-                                }, null);
-                            }
-                        } else {
-                            MyService.this.sendAlert("");
-                        }
-                    } else {
-                        isRunning = false;
-                        presses = 0;
+                        sendAlert();
                     }
+                    isRunning = false;
+                    presses = 0;
                 }
             };
 
@@ -244,23 +209,41 @@ public class MyService extends Service {
         mediaSession.setActive(true);
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopVolumeAlert();
-        unregister();
-    }
+    private void sendAlert() {
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final Criteria criteria = new Criteria();
+        criteria.setAccuracy(Criteria.ACCURACY_FINE);
+        final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+        vibrator.vibrate(TimeUnit.SECONDS.toMillis(1));
 
-    public void register() {
-        IntentFilter screenFilter = new IntentFilter();
-        screenFilter.addAction(Intent.ACTION_SCREEN_ON);
-        screenFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        if (preferences.getBoolean(SettingsActivity.PREFERENCE_SHOW_LOCATION_SWITCH, true)) {
+            if (ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+                final String provider = locationManager.getBestProvider(criteria, true);
+                locationManager.requestSingleUpdate(provider, new LocationListener() {
+                    @Override
+                    public void onLocationChanged(Location location) {
+                        final String uri = "http://maps.google.com/maps?query=" + location.getLatitude() + "," + location.getLongitude();
+                        sendAlert(uri);
+                    }
 
-        registerReceiver(myReceiver, screenFilter);
-    }
+                    @Override
+                    public void onStatusChanged(String provider, int status, Bundle extras) {
+                    }
 
-    public void unregister() {
-        unregisterReceiver(myReceiver);
+                    @Override
+                    public void onProviderEnabled(String provider) {
+                    }
+
+                    @Override
+                    public void onProviderDisabled(String provider) {
+                    }
+                }, null);
+            }
+        } else {
+            sendAlert("");
+        }
     }
 
     private void sendAlert(String locationUrl) {
@@ -286,7 +269,7 @@ public class MyService extends Service {
 
                             final String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                             final SmsManager smsManager = SmsManager.getDefault();
-                            ArrayList<String> messages = smsManager.divideMessage(message);
+                            final ArrayList<String> messages = smsManager.divideMessage(message);
                             smsManager.sendMultipartTextMessage(number, null, messages, null, null);
                             break;
                         }
@@ -301,6 +284,26 @@ public class MyService extends Service {
         } else {
             Log.e(MyService.class.getSimpleName(), "Permissions not granted");
         }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopVolumeAlert();
+        unregister();
+    }
+
+    public void register() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+
+        registerReceiver(myReceiver, intentFilter);
+    }
+
+    public void unregister() {
+        unregisterReceiver(myReceiver);
     }
 
 }

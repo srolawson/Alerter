@@ -17,5 +17,8 @@
     <string name="pref_header_message">Pesan</string>
     <string name="pref_title_notification_alert_switch">Aktifkan Notifikasi Pemberitahuan</string>
     <string name="pref_description_notification_alert_switch">Tampilkan tombol di notifikasi untuk mengirim peringatan</string>
-    <string name="alert_notification_send_alert">Kirim Siaga</string>
+    <string name="pref_title_headset_alert_switch">Aktifkan Peringatan Headset</string>
+    <string name="pref_header_headset">Peringatan Headset</string>
+    <string name="notification_content_title">Layanan Alerter berjalan</string>
+    <string name="notification_content_text">Ketuk untuk mengirim peringatan keamanan</string>
 </resources>

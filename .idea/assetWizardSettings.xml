@@ -88,7 +88,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/communication/ic_call_made_black_24dp.xml" />
+                                                <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/content/ic_send_black_24dp.xml" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -99,7 +99,8 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="text" value="Send Alert" />
+                                                <entry key="fontFamily" value="Script MT Bold" />
+                                                <entry key="text" value="Alert" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -145,7 +146,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/notification/ic_disc_full_black_24dp.xml" />
+                                      <entry key="url" value="jar:file:/C:/Program%20Files/Android/Android%20Studio/plugins/android/lib/android.jar!/images/material_design_icons/hardware/ic_headset_black_24dp.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -155,7 +156,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="outputName" value="ic_disc_full_black_24dp" />
+                            <entry key="outputName" value="ic_headset_black_24dp" />
                             <entry key="sourceFile" value="C:\Users\slawson" />
                           </map>
                         </option>

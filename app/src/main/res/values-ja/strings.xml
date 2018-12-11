@@ -17,5 +17,8 @@
     <string name="pref_header_message">メッセージ</string>
     <string name="pref_title_notification_alert_switch">通知アラートを有効にする</string>
     <string name="pref_description_notification_alert_switch">アラートを送信する通知にボタンを表示する</string>
-    <string name="alert_notification_send_alert">アラートを送信</string>
+    <string name="pref_title_headset_alert_switch">ヘッドセットアラートを有効にする</string>
+    <string name="pref_header_headset">ヘッドセットアラート</string>
+    <string name="notification_content_title">アラートサービスの実行中</string>
+    <string name="notification_content_text">タップして安全警告を送信する</string>
 </resources>

@@ -17,5 +17,8 @@
     <string name="pref_header_message">رسالة</string>
     <string name="pref_title_notification_alert_switch">تمكين تنبيه الإعلام</string>
     <string name="pref_description_notification_alert_switch">عرض زر على الإخطار لإرسال التنبيه</string>
-    <string name="alert_notification_send_alert">إرسال تنبيه</string>
+    <string name="pref_title_headset_alert_switch">تمكين تنبيه السماعة</string>
+    <string name="pref_header_headset">تنبيه سماعة</string>
+    <string name="notification_content_title">تشغيل خدمة التنبيه</string>
+    <string name="notification_content_text">انقر لإرسال تنبيه السلامة</string>
 </resources>

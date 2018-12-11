@@ -17,5 +17,8 @@
     <string name="pref_header_message">Message</string>
     <string name="pref_title_notification_alert_switch">Activer l\'alerte de notification</string>
     <string name="pref_description_notification_alert_switch">Afficher un bouton sur la notification pour envoyer une alerte</string>
-    <string name="alert_notification_send_alert">Envoyer une alerte</string>
+    <string name="pref_title_headset_alert_switch">Activer l\'alerte casque</string>
+    <string name="pref_header_headset">Alerte de casque</string>
+    <string name="notification_content_title">Service d\'alerte en cours d\'exécution</string>
+    <string name="notification_content_text">Appuyez sur pour envoyer une alerte de sécurité</string>
 </resources>

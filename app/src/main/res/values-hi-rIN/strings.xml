@@ -17,5 +17,8 @@
     <string name="pref_header_message">संदेश</string>
     <string name="pref_title_notification_alert_switch">अधिसूचना अलर्ट सक्षम करें</string>
     <string name="pref_description_notification_alert_switch">अलर्ट भेजने के लिए अधिसूचना पर एक बटन दिखाएं</string>
-    <string name="alert_notification_send_alert">अलर्ट भेजें</string>
+    <string name="pref_title_headset_alert_switch">हेडसेट अलर्ट सक्षम करें</string>
+    <string name="pref_header_headset">हेडसेट अलर्ट</string>
+    <string name="notification_content_title">अलर्ट सेवा चल रही है</string>
+    <string name="notification_content_text">सुरक्षा अलर्ट भेजने के लिए टैप करें</string>
 </resources>

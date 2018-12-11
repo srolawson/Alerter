@@ -17,5 +17,8 @@
     <string name="pref_header_message">Сообщение</string>
     <string name="pref_title_notification_alert_switch">Включить оповещение уведомления</string>
     <string name="pref_description_notification_alert_switch">Показывать кнопку в уведомлении для отправки оповещения</string>
-    <string name="alert_notification_send_alert">Отправить оповещение</string>
+    <string name="pref_title_headset_alert_switch">Включить предупреждение гарнитуры</string>
+    <string name="pref_header_headset">Оповещение о наушниках</string>
+    <string name="notification_content_title">Служба оповещения запущена</string>
+    <string name="notification_content_text">Нажмите, чтобы отправить предупреждение безопасности</string>
 </resources>

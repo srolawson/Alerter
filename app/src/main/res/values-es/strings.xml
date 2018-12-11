@@ -17,5 +17,8 @@
     <string name="pref_header_message">Mensaje</string>
     <string name="pref_title_notification_alert_switch">Habilitar alerta de notificación</string>
     <string name="pref_description_notification_alert_switch">Mostrar un botón en la notificación para enviar alerta</string>
-    <string name="alert_notification_send_alert">Enviar Alerta</string>
+    <string name="pref_title_headset_alert_switch">Habilitar alerta de auriculares</string>
+    <string name="pref_header_headset">Alerta de auriculares</string>
+    <string name="notification_content_title">Servicio de alerta en funcionamiento.</string>
+    <string name="notification_content_text">Pulse para enviar alerta de seguridad.</string>
 </resources>

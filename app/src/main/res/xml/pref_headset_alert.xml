@@ -1,0 +1,8 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="headset_alert_switch"
+        android:summary="@string/pref_description_headset_alert_switch"
+        android:title="@string/pref_title_headset_alert_switch" />
+</PreferenceScreen>

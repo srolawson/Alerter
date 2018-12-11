@@ -39,6 +39,10 @@
     <string name="pref_header_message">Message</string>
     <string name="pref_title_notification_alert_switch">Enable Notification Alert</string>
     <string name="pref_description_notification_alert_switch">Show a button on the notification to send alert</string>
-    <string name="alert_notification_send_alert">Send Alert</string>
+    <string name="pref_title_headset_alert_switch">Enable Headset Alert</string>
+    <string name="pref_description_headset_alert_switch">Create an alert if wired headset is removed while music is playing and not plugged back in within 10 seconds</string>
+    <string name="pref_header_headset">Headset Alert</string>
+    <string name="notification_content_title">Alerter service running</string>
+    <string name="notification_content_text">Tap to send safety alert</string>
 
 </resources>

@@ -17,5 +17,8 @@
     <string name="pref_header_message">信息</string>
     <string name="pref_title_notification_alert_switch">启用通知警报</string>
     <string name="pref_description_notification_alert_switch">在通知上显示按钮以发送警报</string>
-    <string name="alert_notification_send_alert">发送提醒</string>
+    <string name="pref_title_headset_alert_switch">启用耳机警报</string>
+    <string name="pref_header_headset">耳机警报</string>
+    <string name="notification_content_title">警报器服务正在运行</string>
+    <string name="notification_content_text">点按即可发送安全警报</string>
 </resources>

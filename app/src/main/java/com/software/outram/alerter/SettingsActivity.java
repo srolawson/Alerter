@@ -49,6 +49,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     public static final String PREFERENCE_SMS_TEXT = "sms_text";
     public static final String PREFERENCE_VOLUME_BUTTON_PRESSES = "volume_button_presses_list";
     public static final String PREFERENCE_NOTIFICATION_SWITCH = "notification_alert_switch";
+    public static final String PREFERENCE_HEADSET_SWITCH = "headset_alert_switch";
     static final int SERVICE_PERMISSION_REQUEST_CODE = 1;
     /**
      * A preference value change listener that updates the preference's summary
@@ -76,22 +77,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(preference.getContext().getApplicationContext());
                 final String contactId = preferences.getString(preference.getKey(), "");
 
-
                 if (contactId.isEmpty()) {
                     Log.i(SettingsActivity.class.getSimpleName(), "Contact preference not set");
 
                 } else {
                     final String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME};
-                    final Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{contactId}, null, null);
+                    final String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?";
+                    try (Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, projection, selection,
+                            new String[]{contactId}, null, null)) {
 
-                    if (cursor != null && cursor.moveToFirst()) {
-                        final int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
-                        final String name = cursor.getString(nameIndex);
-                        preference.setSummary(name);
-                    } else {
-                        preference.setSummary("");
-                        Log.i(SettingsActivity.class.getSimpleName(), "No contact found");
+                        if (cursor != null && cursor.moveToFirst()) {
+                            final int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                            final String name = cursor.getString(nameIndex);
+                            preference.setSummary(name);
+                        } else {
+                            preference.setSummary("");
+                            Log.i(SettingsActivity.class.getSimpleName(), "No contact found");
+                        }
                     }
                 }
             } else {
@@ -108,6 +110,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             if (PREFERENCE_VOLUME_SWITCH.equals(key) || (PREFERENCE_NOTIFICATION_SWITCH.equals(key))) {
                 final boolean volumeSwitch = prefs.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
                 final boolean notificationSwitch = prefs.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, false);
+                final boolean headsetSwitch = prefs.getBoolean(PREFERENCE_HEADSET_SWITCH, false);
 
                 if (volumeSwitch || notificationSwitch) {
                     intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
@@ -167,7 +170,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
         if (!permissionsNeeded.isEmpty()) {
-            final String[] permissionsToGrant = permissionsNeeded.toArray(new String[permissionsNeeded.size()]);
+            final String[] permissionsToGrant = permissionsNeeded.toArray(new String[]{});
             ActivityCompat.requestPermissions(this, permissionsToGrant, SERVICE_PERMISSION_REQUEST_CODE);
         } else {
             notifyForegroundService();
@@ -177,9 +180,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private void notifyForegroundService() {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final boolean isVolumeAlertOn = preferences.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
-        final boolean isNotificationAlertOn = preferences.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, false);
+        final boolean isNotificationAlertOn = preferences.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, true);
+        final boolean isHeadsetAlertOn = preferences.getBoolean(PREFERENCE_HEADSET_SWITCH, true);
 
-        if (isVolumeAlertOn || isNotificationAlertOn) {
+        if (isVolumeAlertOn || isNotificationAlertOn || isHeadsetAlertOn) {
             Intent intent = new Intent(getApplicationContext(), MyService.class);
             intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
             startService(intent);
@@ -244,7 +248,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || VolumePreferenceFragment.class.getName().equals(fragmentName)
                 || MessagePreferenceFragment.class.getName().equals(fragmentName)
-                || NotificationPreferenceFragment.class.getName().equals(fragmentName);
+                || NotificationPreferenceFragment.class.getName().equals(fragmentName)
+                || HeadsetPreferenceFragment.class.getName().equals(fragmentName);
     }
 
     @Override
@@ -265,8 +270,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             if (permissionsGranted) {
                 notifyForegroundService();
             } else {
-                preferences.edit().putBoolean(PREFERENCE_VOLUME_SWITCH, false).commit(); //force to off if permission(s) not granted
-                preferences.edit().putBoolean(PREFERENCE_NOTIFICATION_SWITCH, false).commit(); //force to off if permission(s) not granted
+                //force to off if permission(s) not granted
+                preferences.edit().putBoolean(PREFERENCE_VOLUME_SWITCH, false).apply();
+                preferences.edit().putBoolean(PREFERENCE_NOTIFICATION_SWITCH, false).apply();
+
                 Intent intent = new Intent(getApplicationContext(), MyService.class);
                 stopService(intent);
             }
@@ -330,8 +337,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             contactPicker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
                 @Override
                 public boolean onPreferenceClick(Preference preference) {
-                    Intent pickContactIntent = new Intent(Intent.ACTION_PICK, Uri.parse("content://contacts"));
-                    pickContactIntent.setType(ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE); // Show user only contacts w/ phone numbers
+                    Intent pickContactIntent = new Intent(Intent.ACTION_PICK);
+                    pickContactIntent.setDataAndType(Uri.parse("content://contacts"), ContactsContract.CommonDataKinds.Phone.CONTENT_TYPE);
                     startActivityForResult(pickContactIntent, PICK_CONTACT_REQUEST);
                     return true;
                 }
@@ -345,49 +352,52 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             if (requestCode == PICK_CONTACT_REQUEST && resultCode == RESULT_OK) {
                 Uri contactUri = data.getData();
                 String[] projection = new String[]{ContactsContract.PhoneLookup.DISPLAY_NAME, ContactsContract.CommonDataKinds.Phone.CONTACT_ID};
-                Cursor cursor = getActivity().getContentResolver().query(contactUri, projection, null, null, null);
+                try (Cursor cursor = getActivity().getContentResolver().query(contactUri, projection, null, null, null)) {
 
-                if (cursor != null && cursor.moveToFirst()) {
-                    final int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
-                    final String name = cursor.getString(nameIndex);
+                    if (cursor != null && cursor.moveToFirst()) {
+                        final int nameIndex = cursor.getColumnIndex(ContactsContract.PhoneLookup.DISPLAY_NAME);
+                        final String name = cursor.getString(nameIndex);
 
-                    final int idIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
-                    final String id = cursor.getString(idIndex);
+                        final int idIndex = cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID);
+                        final String id = cursor.getString(idIndex);
+                        final String selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?";
+                        final ContentResolver contentResolver = getActivity().getContentResolver();
 
-                    Cursor phoneNumberCursor = getActivity().getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
-                            new String[]{id}, null, null);
-                    boolean contactHasNumber = false;
+                        Cursor phoneCursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, selection,
+                                new String[]{id}, null, null);
+                        boolean contactHasNumber = false;
 
-                    if (phoneNumberCursor != null) {
-                        while (phoneNumberCursor.moveToNext()) {
-                            final int typeIndex = phoneNumberCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
+                        if (phoneCursor != null) {
+                            while (phoneCursor.moveToNext()) {
+                                final int typeIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.TYPE);
 
-                            if (ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE == phoneNumberCursor.getInt(typeIndex)) {
-                                contactHasNumber = true;
-                                break;
+                                if (ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE == phoneCursor.getInt(typeIndex)) {
+                                    contactHasNumber = true;
+                                    break;
+                                }
                             }
+                            phoneCursor.close();
+                        } else {
+                            Log.e(MyService.class.getSimpleName(), "Cursor is null. Query failed to return a result");
                         }
-                        phoneNumberCursor.close();
-                    } else {
-                        Log.e(MyService.class.getSimpleName(), "Cursor is null. Query failed to return a result");
-                    }
 
-                    if (contactHasNumber) {
-                        Preference contactPreference = findPreference(PREFERENCE_CONTACT);
-                        contactPreference.setSummary(name);
-                        contactPreference.getEditor().putString(PREFERENCE_CONTACT, id).commit();
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                        builder.setTitle(R.string.alert_dialog_title).
-                                setMessage(R.string.alert_dialog_message).
-                                setCancelable(false).
-                                setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.cancel();
-                                    }
-                                });
-                        builder.show();
+                        if (contactHasNumber) {
+                            Preference contactPreference = findPreference(PREFERENCE_CONTACT);
+                            contactPreference.setSummary(name);
+                            contactPreference.getEditor().putString(PREFERENCE_CONTACT, id).commit();
+                        } else {
+                            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                            builder.setTitle(R.string.alert_dialog_title).
+                                    setMessage(R.string.alert_dialog_message).
+                                    setCancelable(false).
+                                    setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            dialog.cancel();
+                                        }
+                                    });
+                            builder.show();
+                        }
                     }
                 }
             }
@@ -415,6 +425,31 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_notification_alert);
+            setHasOptionsMenu(true);
+        }
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            int id = item.getItemId();
+            if (id == android.R.id.home) {
+                startActivity(new Intent(getActivity(), SettingsActivity.class));
+                return true;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * This fragment shows headset preferences only. It is used when the
+     * activity is showing a two-pane settings UI.
+     */
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    public static class HeadsetPreferenceFragment extends PreferenceFragment {
+
+        @Override
+        public void onCreate(Bundle savedInstanceState) {
+            super.onCreate(savedInstanceState);
+            addPreferencesFromResource(R.xml.pref_headset_alert);
             setHasOptionsMenu(true);
         }
 

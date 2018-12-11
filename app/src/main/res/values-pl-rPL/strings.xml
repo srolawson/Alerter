@@ -17,5 +17,8 @@
     <string name="pref_header_message">Wiadomość</string>
     <string name="pref_title_notification_alert_switch">Włącz Alert powiadomień</string>
     <string name="pref_description_notification_alert_switch">Pokaż przycisk w powiadomieniu, aby wysłać alert</string>
-    <string name="alert_notification_send_alert">Wyślij alert</string>
+    <string name="pref_title_headset_alert_switch">Włącz alert zestawu słuchawkowego</string>
+    <string name="pref_header_headset">Alert zestawu słuchawkowego</string>
+    <string name="notification_content_title">Uruchomiona usługa Alerter</string>
+    <string name="notification_content_text">Stuknij, aby wysłać alert bezpieczeństwa</string>
 </resources>

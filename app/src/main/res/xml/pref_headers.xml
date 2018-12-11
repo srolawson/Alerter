@@ -8,6 +8,11 @@
         android:title="@string/pref_header_volume_alert" />
 
     <header
+        android:fragment="com.software.outram.alerter.SettingsActivity$HeadsetPreferenceFragment"
+        android:icon="@drawable/ic_headset_black_24dp"
+        android:title="@string/pref_header_headset" />
+
+    <header
         android:fragment="com.software.outram.alerter.SettingsActivity$NotificationPreferenceFragment"
         android:icon="@drawable/ic_notifications_black_24dp"
         android:title="@string/pref_header_notifications" />

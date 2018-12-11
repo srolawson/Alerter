@@ -17,5 +17,8 @@
     <string name="pref_header_message">Messaggio</string>
     <string name="pref_title_notification_alert_switch">Abilita avviso di notifica</string>
     <string name="pref_description_notification_alert_switch">Mostra un pulsante sulla notifica per inviare un avviso</string>
-    <string name="alert_notification_send_alert">Invia avviso</string>
+    <string name="pref_title_headset_alert_switch">Abilita avviso cuffia</string>
+    <string name="pref_header_headset">Avviso per cuffia</string>
+    <string name="notification_content_title">Servizio Alerter in esecuzione</string>
+    <string name="notification_content_text">Tocca per inviare un avviso di sicurezza</string>
 </resources>
