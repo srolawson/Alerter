@@ -1,7 +1,6 @@
 package com.software.outram.alerter;
 
 import android.Manifest;
-import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,6 +32,7 @@ import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v4.media.session.PlaybackStateCompat;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
@@ -43,24 +43,62 @@ public class MyService extends Service {
     public static String START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION";
     public static String STOP_FOREGROUND_ACTION = "STOP_FOREGROUND_ACTION";
     public static String SEND_ALERT_ACTION = "SEND_ALERT_ACTION";
-    public static String HEADSET_UNPLUGGED_ACTION = "HEADSET_UNPLUGGED_ACTION";
+    public static String ACTION_AUDIO_BECOMING_NOISY = "ACTION_AUDIO_BECOMING_NOISY";
+    public static String ACTION_HEADSET_UNPLUGGED = "ACTION_HEADSET_UNPLUGGED";
+    public static String ACTION_HEADSET_PLUGGED = "ACTION_HEADSET_PLUGGED";
+
+
     private final MyReceiver myReceiver = new MyReceiver();
+    private final HeadsetAlertTimer headsetAlertTimer =
+            new HeadsetAlertTimer(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(1));
     private MediaSessionCompat mediaSession;
 
-    final CountDownTimer timer = new CountDownTimer(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(1)) {
+    public MyService() {
+    }
 
-        public void onTick(long millisUntilFinished) {
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final boolean isHeadsetAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_HEADSET_SWITCH, true);
+        final NotificationCompat.Builder notificationBuilder = createNotification();
+        final AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
+
+        if (powerManager.isInteractive()) {
+            headsetAlertTimer.reset();
+            stopVolumeAlert();
         }
 
-        public void onFinish() {
-            AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            if (!audioManager.isWiredHeadsetOn()) {
-                sendAlert();
+        if (intent.getBooleanExtra(STOP_FOREGROUND_ACTION, false)) {
+            stopForeground(true);
+        } else if (intent.getBooleanExtra(START_FOREGROUND_ACTION, false)) {
+            startForeground(ID_SERVICE, notificationBuilder.build());
+        } else if (intent.getBooleanExtra(SEND_ALERT_ACTION, false)) {
+            sendAlert();
+        } else if (intent.getBooleanExtra(ACTION_HEADSET_UNPLUGGED, false)) {
+            headsetAlertTimer.isHeadsetUnplugged = true;
+
+            if (isHeadsetAlertOn && !headsetAlertTimer.isRunning) {
+                headsetAlertTimer.start();
+            }
+        } else if (intent.getBooleanExtra(ACTION_HEADSET_PLUGGED, false)) {
+            headsetAlertTimer.isHeadsetUnplugged = false;
+            headsetAlertTimer.cancel();
+        } else if (intent.getBooleanExtra(ACTION_AUDIO_BECOMING_NOISY, false)) {
+            headsetAlertTimer.isAudioBecomingNoisy = true;
+
+            if (isHeadsetAlertOn && !headsetAlertTimer.isRunning) {
+                headsetAlertTimer.start();
             }
         }
-    };
 
-    public MyService() {
+        final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
+        if (isVolumeAlertOn && !powerManager.isInteractive()) {
+            setupVolumeAlert();
+        }
+
+        return Service.START_STICKY;
     }
 
     @Override
@@ -80,81 +118,54 @@ public class MyService extends Service {
         final String channelId = "alerter_service_channelid";
         final String channelName = getString(R.string.app_name) + " Service";
         NotificationChannel channel = new NotificationChannel(channelId, channelName, NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         notificationManager.createNotificationChannel(channel);
         return channelId;
     }
 
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        super.onStartCommand(intent, flags, startId);
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
-        final boolean showNotification = preferences.getBoolean(SettingsActivity.PREFERENCE_NOTIFICATION_SWITCH, true);
-        final NotificationCompat.Builder notificationBuilder = createNotification();
-
-        if (intent.getBooleanExtra(STOP_FOREGROUND_ACTION, false)) {
-            stopForeground(true);
-        } else if (intent.getBooleanExtra(START_FOREGROUND_ACTION, false)) {
-            if (showNotification) {
-                final Intent sendAlertConfirmIntent = new Intent(this, MyService.class);
-                sendAlertConfirmIntent.putExtra(SEND_ALERT_ACTION, true);
-
-                final PendingIntent sendAlertConfirmPendingIntent =
-                        PendingIntent.getService(this, 0, sendAlertConfirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-                notificationBuilder.setContentIntent(sendAlertConfirmPendingIntent);
-                notificationBuilder.setContentText(getString(R.string.notification_content_text));
-            }
-            startForeground(ID_SERVICE, notificationBuilder.build());
-        }
-
-        final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
-
-        if (powerManager.isInteractive()) {
-            stopVolumeAlert();
-        } else {
-            final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
-            if (isVolumeAlertOn) {
-                setupVolumeAlert();
-            }
-        }
-
-        if (intent.getBooleanExtra(SEND_ALERT_ACTION, false)) {
-            sendAlert();
-        }
-
-        if (powerManager.isInteractive()) {
-            timer.cancel();
-        } else {
-            final boolean isHeadsetAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_HEADSET_SWITCH, true);
-            final boolean isHeadsetAlertActionOn = intent.getBooleanExtra(HEADSET_UNPLUGGED_ACTION, false);
-
-            if (isHeadsetAlertOn && isHeadsetAlertActionOn) {
-                timer.start();
-            }
-        }
-
-        return Service.START_STICKY;
-    }
-
     private NotificationCompat.Builder createNotification() {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final boolean isNotificationOn = preferences.getBoolean(SettingsActivity.PREFERENCE_NOTIFICATION_SWITCH, true);
         final String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
         final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
 
-        return notificationBuilder.setOngoing(true)
-                .setContentTitle(getString(R.string.notification_content_title))
+        notificationBuilder.setOngoing(true)
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(false)
-                .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
-                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setShowWhen(false)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE);
+
+        if (isNotificationOn) {
+            final RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_remote_view_layout);
+            final Intent sendAlertConfirmIntent = new Intent(this, MyService.class);
+            sendAlertConfirmIntent.putExtra(SEND_ALERT_ACTION, true);
+            final PendingIntent sendAlertConfirmPendingIntent =
+                    PendingIntent.getService(this, 0, sendAlertConfirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            notificationLayout.setOnClickPendingIntent(R.id.notification_remote_view_content_text, sendAlertConfirmPendingIntent);
+            notificationBuilder.setCustomContentView(notificationLayout)
+                    .setStyle(new NotificationCompat.DecoratedCustomViewStyle())
+                    .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        } else {
+            notificationBuilder.setContentTitle(getString(R.string.notification_content_title));
+            notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_SECRET);
+            notificationBuilder.setPriority(NotificationCompat.PRIORITY_LOW);
+        }
+        return notificationBuilder;
     }
 
     private void stopVolumeAlert() {
         if (mediaSession != null) {
-            mediaSession.release(); //do not show remote volume control if screen is on
+            mediaSession.release();
         }
+    }
+
+    public void register() {
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(AudioManager.ACTION_HEADSET_PLUG);
+        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        intentFilter.setPriority(999);
+        registerReceiver(myReceiver, intentFilter);
     }
 
     private void setupVolumeAlert() {
@@ -293,13 +304,38 @@ public class MyService extends Service {
         unregister();
     }
 
-    public void register() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
-        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+    private final class HeadsetAlertTimer extends CountDownTimer {
 
-        registerReceiver(myReceiver, intentFilter);
+        boolean isRunning = false;
+        boolean isAudioBecomingNoisy = false;
+        boolean isHeadsetUnplugged = false;
+
+        HeadsetAlertTimer(long millisInFuture, long countDownInterval) {
+            super(millisInFuture, countDownInterval);
+        }
+
+        public void onTick(long millisUntilFinished) {
+            isRunning = true;
+            if (millisUntilFinished == TimeUnit.SECONDS.toMillis(5)) {
+                final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                vibrator.vibrate(TimeUnit.SECONDS.toMillis(1));
+            }
+        }
+
+        void reset() {
+            isRunning = false;
+            isHeadsetUnplugged = false;
+            isAudioBecomingNoisy = false;
+            cancel();
+        }
+
+        public void onFinish() {
+            if (isAudioBecomingNoisy && isHeadsetUnplugged) {
+                //a playing music player has been recently paused and a headset unplugged
+                sendAlert();
+            }
+            reset();
+        }
     }
 
     public void unregister() {
