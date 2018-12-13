@@ -107,12 +107,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
             final Intent intent = new Intent(getApplicationContext(), MyService.class);
 
-            if (PREFERENCE_VOLUME_SWITCH.equals(key) || (PREFERENCE_NOTIFICATION_SWITCH.equals(key))) {
+            if (PREFERENCE_VOLUME_SWITCH.equals(key) || (PREFERENCE_NOTIFICATION_SWITCH.equals(key)) || PREFERENCE_HEADSET_SWITCH.equals(key)) {
                 final boolean volumeSwitch = prefs.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
                 final boolean notificationSwitch = prefs.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, false);
                 final boolean headsetSwitch = prefs.getBoolean(PREFERENCE_HEADSET_SWITCH, false);
 
-                if (volumeSwitch || notificationSwitch) {
+                if (volumeSwitch || notificationSwitch || headsetSwitch) {
                     intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
                 } else {
                     intent.putExtra(MyService.STOP_FOREGROUND_ACTION, true);
@@ -180,8 +180,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     private void notifyForegroundService() {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final boolean isVolumeAlertOn = preferences.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
-        final boolean isNotificationAlertOn = preferences.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, true);
-        final boolean isHeadsetAlertOn = preferences.getBoolean(PREFERENCE_HEADSET_SWITCH, true);
+        final boolean isNotificationAlertOn = preferences.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, false);
+        final boolean isHeadsetAlertOn = preferences.getBoolean(PREFERENCE_HEADSET_SWITCH, false);
 
         if (isVolumeAlertOn || isNotificationAlertOn || isHeadsetAlertOn) {
             Intent intent = new Intent(getApplicationContext(), MyService.class);
@@ -273,6 +273,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 //force to off if permission(s) not granted
                 preferences.edit().putBoolean(PREFERENCE_VOLUME_SWITCH, false).apply();
                 preferences.edit().putBoolean(PREFERENCE_NOTIFICATION_SWITCH, false).apply();
+                preferences.edit().putBoolean(PREFERENCE_HEADSET_SWITCH, false).apply();
 
                 Intent intent = new Intent(getApplicationContext(), MyService.class);
                 stopService(intent);

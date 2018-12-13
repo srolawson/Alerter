@@ -1,7 +1,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
-        android:defaultValue="true"
+        android:defaultValue="false"
         android:key="notification_alert_switch"
         android:summary="@string/pref_description_notification_alert_switch"
         android:title="@string/pref_title_notification_alert_switch" />

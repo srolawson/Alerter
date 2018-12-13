@@ -60,7 +60,7 @@ public class MyService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
-        final boolean isHeadsetAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_HEADSET_SWITCH, true);
+        final boolean isHeadsetAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_HEADSET_SWITCH, false);
         final NotificationCompat.Builder notificationBuilder = createNotification();
         final AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
@@ -68,6 +68,11 @@ public class MyService extends Service {
         if (powerManager.isInteractive()) {
             headsetAlertTimer.reset();
             stopVolumeAlert();
+        } else {
+            final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
+            if (isVolumeAlertOn && !powerManager.isInteractive()) {
+                setupVolumeAlert();
+            }
         }
 
         if (intent.getBooleanExtra(STOP_FOREGROUND_ACTION, false)) {
@@ -91,11 +96,6 @@ public class MyService extends Service {
             if (isHeadsetAlertOn && !headsetAlertTimer.isRunning) {
                 headsetAlertTimer.start();
             }
-        }
-
-        final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
-        if (isVolumeAlertOn && !powerManager.isInteractive()) {
-            setupVolumeAlert();
         }
 
         return Service.START_STICKY;
@@ -124,7 +124,7 @@ public class MyService extends Service {
 
     private NotificationCompat.Builder createNotification() {
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
-        final boolean isNotificationOn = preferences.getBoolean(SettingsActivity.PREFERENCE_NOTIFICATION_SWITCH, true);
+        final boolean isNotificationOn = preferences.getBoolean(SettingsActivity.PREFERENCE_NOTIFICATION_SWITCH, false);
         final String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
         final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
 
@@ -132,6 +132,7 @@ public class MyService extends Service {
                 .setSmallIcon(R.drawable.ic_stat_name)
                 .setAutoCancel(false)
                 .setShowWhen(false)
+                .setOnlyAlertOnce(true)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE);
 
         if (isNotificationOn) {
