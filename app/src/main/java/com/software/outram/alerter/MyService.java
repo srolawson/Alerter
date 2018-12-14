@@ -65,10 +65,16 @@ public class MyService extends Service {
         final AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
 
+        if (mediaSession != null) {
+            //release current media session to avoid leaking it
+            mediaSession.release();
+        }
+
         if (powerManager.isInteractive()) {
+            //screen turned on
             headsetAlertTimer.reset();
-            stopVolumeAlert();
         } else {
+            //screen turned off
             final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
             if (isVolumeAlertOn && !powerManager.isInteractive()) {
                 setupVolumeAlert();
@@ -84,16 +90,15 @@ public class MyService extends Service {
         } else if (intent.getBooleanExtra(ACTION_HEADSET_UNPLUGGED, false)) {
             headsetAlertTimer.isHeadsetUnplugged = true;
 
-            if (isHeadsetAlertOn && !headsetAlertTimer.isRunning) {
+            if (!powerManager.isInteractive() && isHeadsetAlertOn && !headsetAlertTimer.isRunning) {
                 headsetAlertTimer.start();
             }
         } else if (intent.getBooleanExtra(ACTION_HEADSET_PLUGGED, false)) {
-            headsetAlertTimer.isHeadsetUnplugged = false;
-            headsetAlertTimer.cancel();
+            headsetAlertTimer.reset();
         } else if (intent.getBooleanExtra(ACTION_AUDIO_BECOMING_NOISY, false)) {
             headsetAlertTimer.isAudioBecomingNoisy = true;
 
-            if (isHeadsetAlertOn && !headsetAlertTimer.isRunning) {
+            if (!powerManager.isInteractive() && isHeadsetAlertOn && !headsetAlertTimer.isRunning) {
                 headsetAlertTimer.start();
             }
         }
@@ -109,7 +114,23 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        register();
+
+        final IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
+        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
+        intentFilter.addAction(AudioManager.ACTION_HEADSET_PLUG);
+        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        intentFilter.setPriority(999);
+        registerReceiver(myReceiver, intentFilter);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (mediaSession != null) {
+            mediaSession.release();
+        }
+        unregisterReceiver(myReceiver);
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -151,22 +172,6 @@ public class MyService extends Service {
             notificationBuilder.setPriority(NotificationCompat.PRIORITY_LOW);
         }
         return notificationBuilder;
-    }
-
-    private void stopVolumeAlert() {
-        if (mediaSession != null) {
-            mediaSession.release();
-        }
-    }
-
-    public void register() {
-        final IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(Intent.ACTION_SCREEN_ON);
-        intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
-        intentFilter.addAction(AudioManager.ACTION_HEADSET_PLUG);
-        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        intentFilter.setPriority(999);
-        registerReceiver(myReceiver, intentFilter);
     }
 
     private void setupVolumeAlert() {
@@ -298,13 +303,6 @@ public class MyService extends Service {
         }
     }
 
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        stopVolumeAlert();
-        unregister();
-    }
-
     private final class HeadsetAlertTimer extends CountDownTimer {
 
         boolean isRunning = false;
@@ -317,7 +315,7 @@ public class MyService extends Service {
 
         public void onTick(long millisUntilFinished) {
             isRunning = true;
-            if (millisUntilFinished == TimeUnit.SECONDS.toMillis(5)) {
+            if (isAudioBecomingNoisy && isHeadsetUnplugged && millisUntilFinished <= TimeUnit.SECONDS.toMillis(5)) {
                 final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
                 vibrator.vibrate(TimeUnit.SECONDS.toMillis(1));
             }
@@ -337,10 +335,6 @@ public class MyService extends Service {
             }
             reset();
         }
-    }
-
-    public void unregister() {
-        unregisterReceiver(myReceiver);
     }
 
 }
