@@ -33,7 +33,7 @@ public class MyReceiver extends android.content.BroadcastReceiver {
                 }
             }
         } else {
-            throw new UnsupportedOperationException("Intent not implemented: " + intent);
+            //throw new UnsupportedOperationException("Intent not implemented: " + intent);
         }
     }
 }

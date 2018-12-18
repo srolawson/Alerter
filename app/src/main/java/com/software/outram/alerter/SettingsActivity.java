@@ -21,7 +21,6 @@ import android.preference.PreferenceManager;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
@@ -105,21 +104,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
     SharedPreferences.OnSharedPreferenceChangeListener sharedPreferenceListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
         public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-            final Intent intent = new Intent(getApplicationContext(), MyService.class);
-
             if (PREFERENCE_VOLUME_SWITCH.equals(key) || (PREFERENCE_NOTIFICATION_SWITCH.equals(key)) || PREFERENCE_HEADSET_SWITCH.equals(key)) {
-                final boolean volumeSwitch = prefs.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
-                final boolean notificationSwitch = prefs.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, false);
-                final boolean headsetSwitch = prefs.getBoolean(PREFERENCE_HEADSET_SWITCH, false);
-
-                if (volumeSwitch || notificationSwitch || headsetSwitch) {
-                    intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
-                } else {
-                    intent.putExtra(MyService.STOP_FOREGROUND_ACTION, true);
-                }
+                setupService();
             }
-
-            getApplicationContext().startService(intent);
         }
     };
 
@@ -157,14 +144,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+        setupService();
+    }
 
+    private void setupService() {
         final String[] permissions = new String[]{Manifest.permission.SEND_SMS, Manifest.permission.READ_CONTACTS,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION};
 
         final List<String> permissionsNeeded = new ArrayList<>();
         for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 permissionsNeeded.add(permission);
             }
         }
@@ -173,18 +163,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             final String[] permissionsToGrant = permissionsNeeded.toArray(new String[]{});
             ActivityCompat.requestPermissions(this, permissionsToGrant, SERVICE_PERMISSION_REQUEST_CODE);
         } else {
-            notifyForegroundService();
-        }
-    }
-
-    private void notifyForegroundService() {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        final boolean isVolumeAlertOn = preferences.getBoolean(PREFERENCE_VOLUME_SWITCH, false);
-        final boolean isNotificationAlertOn = preferences.getBoolean(PREFERENCE_NOTIFICATION_SWITCH, false);
-        final boolean isHeadsetAlertOn = preferences.getBoolean(PREFERENCE_HEADSET_SWITCH, false);
-
-        if (isVolumeAlertOn || isNotificationAlertOn || isHeadsetAlertOn) {
-            Intent intent = new Intent(getApplicationContext(), MyService.class);
+            final Intent intent = new Intent(getApplicationContext(), MyService.class);
             intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
             startService(intent);
         }
@@ -262,15 +241,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             for (int grantResult : grantResults) {
                 if (grantResult != PackageManager.PERMISSION_GRANTED) {
                     permissionsGranted = false;
+                    break;
                 }
             }
 
-            final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
             if (permissionsGranted) {
-                notifyForegroundService();
+                final Intent intent = new Intent(getApplicationContext(), MyService.class);
+                intent.putExtra(MyService.START_FOREGROUND_ACTION, true);
+                startService(intent);
             } else {
                 //force to off if permission(s) not granted
+                final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
                 preferences.edit().putBoolean(PREFERENCE_VOLUME_SWITCH, false).apply();
                 preferences.edit().putBoolean(PREFERENCE_NOTIFICATION_SWITCH, false).apply();
                 preferences.edit().putBoolean(PREFERENCE_HEADSET_SWITCH, false).apply();
@@ -332,7 +313,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // guidelines.
             bindPreferenceSummaryToValue(findPreference(PREFERENCE_SMS_TEXT));
             bindPreferenceSummaryToValue(findPreference(PREFERENCE_CONTACT));
-
             Preference contactPicker = findPreference(PREFERENCE_CONTACT);
 
             contactPicker.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {

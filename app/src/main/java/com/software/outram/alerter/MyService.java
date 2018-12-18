@@ -59,32 +59,34 @@ public class MyService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final boolean isHeadsetAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_HEADSET_SWITCH, false);
+        final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
+        final boolean isNotificationAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_NOTIFICATION_SWITCH, false);
         final NotificationCompat.Builder notificationBuilder = createNotification();
-        final AudioManager audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         final PowerManager powerManager = ((PowerManager) getSystemService(Context.POWER_SERVICE));
-
-        if (mediaSession != null) {
-            //release current media session to avoid leaking it
-            mediaSession.release();
-        }
 
         if (powerManager.isInteractive()) {
             //screen turned on
             headsetAlertTimer.reset();
+            stopVolumeAlert();
         } else {
             //screen turned off
-            final boolean isVolumeAlertOn = preferences.getBoolean(SettingsActivity.PREFERENCE_VOLUME_SWITCH, false);
-            if (isVolumeAlertOn && !powerManager.isInteractive()) {
+            if (isVolumeAlertOn) {
                 setupVolumeAlert();
             }
         }
 
-        if (intent.getBooleanExtra(STOP_FOREGROUND_ACTION, false)) {
+        if ((intent == null || intent.getBooleanExtra(START_FOREGROUND_ACTION, false))) {
+            if (isVolumeAlertOn || isNotificationAlertOn || isHeadsetAlertOn) {
+                startForeground(ID_SERVICE, notificationBuilder.build());
+            } else {
+                stopForeground(true);
+                stopSelf();
+            }
+        } else if (intent.getBooleanExtra(STOP_FOREGROUND_ACTION, false)) {
             stopForeground(true);
-        } else if (intent.getBooleanExtra(START_FOREGROUND_ACTION, false)) {
-            startForeground(ID_SERVICE, notificationBuilder.build());
+            stopSelf();
         } else if (intent.getBooleanExtra(SEND_ALERT_ACTION, false)) {
             sendAlert();
         } else if (intent.getBooleanExtra(ACTION_HEADSET_UNPLUGGED, false)) {
@@ -120,7 +122,6 @@ public class MyService extends Service {
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
         intentFilter.addAction(AudioManager.ACTION_HEADSET_PLUG);
         intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        intentFilter.setPriority(999);
         registerReceiver(myReceiver, intentFilter);
     }
 
@@ -144,7 +145,7 @@ public class MyService extends Service {
     }
 
     private NotificationCompat.Builder createNotification() {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final boolean isNotificationOn = preferences.getBoolean(SettingsActivity.PREFERENCE_NOTIFICATION_SWITCH, false);
         final String channelId = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? createNotificationChannel() : "";
         final NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, channelId);
@@ -174,8 +175,14 @@ public class MyService extends Service {
         return notificationBuilder;
     }
 
+    private void stopVolumeAlert() {
+        if (mediaSession != null) {
+            mediaSession.release(); //do not show remote volume control if screen is on
+        }
+    }
+
     private void setupVolumeAlert() {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final int maxVolumePresses = Integer.parseInt(preferences.getString(SettingsActivity.PREFERENCE_VOLUME_BUTTON_PRESSES, "8"));
         final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         final int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
@@ -187,7 +194,7 @@ public class MyService extends Service {
         final VolumeProviderCompat volumeProvider = new VolumeProviderCompat(VolumeProviderCompat.VOLUME_CONTROL_ABSOLUTE, maxVolume, currentVolume) {
             final int duration = maxVolumePresses / 2; // gives the user 500ms per press of the volume button
             boolean isRunning = false;
-            int presses = 0;
+            int volumePresses = 0;
             final CountDownTimer timer = new CountDownTimer(TimeUnit.SECONDS.toMillis(duration), TimeUnit.SECONDS.toMillis(1)) {
 
                 public void onTick(long millisUntilFinished) {
@@ -196,11 +203,11 @@ public class MyService extends Service {
                 }
 
                 public void onFinish() {
-                    if (presses >= maxVolumePresses) {
+                    if (volumePresses >= maxVolumePresses) {
                         sendAlert();
                     }
                     isRunning = false;
-                    presses = 0;
+                    volumePresses = 0;
                 }
             };
 
@@ -210,7 +217,7 @@ public class MyService extends Service {
                     if (!isRunning) {
                         timer.start();
                     }
-                    presses++;
+                    volumePresses++;
                     audio.adjustStreamVolume(AudioManager.STREAM_MUSIC, AudioManager.ADJUST_LOWER, AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
                 } else if (AudioManager.ADJUST_RAISE == direction) {
                     timer.cancel();
@@ -227,15 +234,15 @@ public class MyService extends Service {
     }
 
     private void sendAlert() {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final Criteria criteria = new Criteria();
         criteria.setAccuracy(Criteria.ACCURACY_FINE);
         final Vibrator vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         vibrator.vibrate(TimeUnit.SECONDS.toMillis(1));
 
         if (preferences.getBoolean(SettingsActivity.PREFERENCE_SHOW_LOCATION_SWITCH, true)) {
-            if (ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 final LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
                 final String provider = locationManager.getBestProvider(criteria, true);
                 locationManager.requestSingleUpdate(provider, new LocationListener() {
@@ -264,11 +271,11 @@ public class MyService extends Service {
     }
 
     private void sendAlert(String locationUrl) {
-        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MyService.this.getApplicationContext());
+        final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         final String contactId = preferences.getString(SettingsActivity.PREFERENCE_CONTACT, "");
 
-        if (ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(MyService.this, Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
             if (!contactId.isEmpty()) {
                 Cursor cursor = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?",
                         new String[]{contactId}, null, null);
