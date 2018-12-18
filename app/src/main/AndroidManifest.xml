@@ -12,6 +12,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
@@ -21,25 +22,17 @@
             android:name=".SettingsActivity"
             android:label="@string/app_name">
             <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <receiver android:name=".MyReceiver" />
+        <receiver android:name=".BroadcastReceiver" />
 
         <service
-            android:name=".MyService"
+            android:name=".Service"
             android:enabled="true" />
-
-        <receiver
-            android:name=".MyBootReceiver"
-            android:enabled="true">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-            </intent-filter>
-        </receiver>
 
     </application>
 

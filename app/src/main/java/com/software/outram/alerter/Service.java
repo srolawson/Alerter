@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -37,7 +36,7 @@ import android.widget.RemoteViews;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
-public class MyService extends Service {
+public class Service extends android.app.Service {
 
     private static final int ID_SERVICE = 101;
     public static String START_FOREGROUND_ACTION = "START_FOREGROUND_ACTION";
@@ -48,12 +47,12 @@ public class MyService extends Service {
     public static String ACTION_HEADSET_PLUGGED = "ACTION_HEADSET_PLUGGED";
 
 
-    private final MyReceiver myReceiver = new MyReceiver();
+    private final BroadcastReceiver broadcastReceiver = new BroadcastReceiver();
     private final HeadsetAlertTimer headsetAlertTimer =
             new HeadsetAlertTimer(TimeUnit.SECONDS.toMillis(10), TimeUnit.SECONDS.toMillis(1));
     private MediaSessionCompat mediaSession;
 
-    public MyService() {
+    public Service() {
     }
 
     @Override
@@ -105,7 +104,7 @@ public class MyService extends Service {
             }
         }
 
-        return Service.START_STICKY;
+        return android.app.Service.START_STICKY;
     }
 
     @Override
@@ -122,7 +121,7 @@ public class MyService extends Service {
         intentFilter.addAction(Intent.ACTION_SCREEN_OFF);
         intentFilter.addAction(AudioManager.ACTION_HEADSET_PLUG);
         intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
-        registerReceiver(myReceiver, intentFilter);
+        registerReceiver(broadcastReceiver, intentFilter);
     }
 
     @Override
@@ -131,7 +130,7 @@ public class MyService extends Service {
         if (mediaSession != null) {
             mediaSession.release();
         }
-        unregisterReceiver(myReceiver);
+        unregisterReceiver(broadcastReceiver);
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -159,7 +158,7 @@ public class MyService extends Service {
 
         if (isNotificationOn) {
             final RemoteViews notificationLayout = new RemoteViews(getPackageName(), R.layout.notification_remote_view_layout);
-            final Intent sendAlertConfirmIntent = new Intent(this, MyService.class);
+            final Intent sendAlertConfirmIntent = new Intent(this, Service.class);
             sendAlertConfirmIntent.putExtra(SEND_ALERT_ACTION, true);
             final PendingIntent sendAlertConfirmPendingIntent =
                     PendingIntent.getService(this, 0, sendAlertConfirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
@@ -187,7 +186,7 @@ public class MyService extends Service {
         final AudioManager audio = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         final int currentVolume = audio.getStreamVolume(AudioManager.STREAM_MUSIC);
         final int maxVolume = audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-        mediaSession = new MediaSessionCompat(this, MyService.class.getSimpleName());
+        mediaSession = new MediaSessionCompat(this, Service.class.getSimpleName());
         mediaSession.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
         mediaSession.setPlaybackState(new PlaybackStateCompat.Builder().setState(PlaybackStateCompat.STATE_PLAYING, 0, 0).build());
 
@@ -199,7 +198,7 @@ public class MyService extends Service {
 
                 public void onTick(long millisUntilFinished) {
                     isRunning = true;
-                    Log.i(MyService.class.getSimpleName(), "seconds remaining: " + millisUntilFinished / 1000);
+                    Log.i(Service.class.getSimpleName(), "seconds remaining: " + millisUntilFinished / 1000);
                 }
 
                 public void onFinish() {
@@ -300,13 +299,13 @@ public class MyService extends Service {
                     }
                     cursor.close();
                 } else {
-                    Log.e(MyService.class.getSimpleName(), "Cursor is null. Query failed to return a result");
+                    Log.e(Service.class.getSimpleName(), "Cursor is null. Query failed to return a result");
                 }
             } else {
-                Log.i(MyService.class.getSimpleName(), "Contact preference not set");
+                Log.i(Service.class.getSimpleName(), "Contact preference not set");
             }
         } else {
-            Log.e(MyService.class.getSimpleName(), "Permissions not granted");
+            Log.e(Service.class.getSimpleName(), "Permissions not granted");
         }
     }
 
