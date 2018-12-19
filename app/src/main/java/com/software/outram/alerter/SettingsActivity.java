@@ -164,7 +164,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             ActivityCompat.requestPermissions(this, permissionsToGrant, SERVICE_PERMISSION_REQUEST_CODE);
         } else {
             final Intent intent = new Intent(getApplicationContext(), Service.class);
-            intent.putExtra(Service.START_FOREGROUND_ACTION, true);
+            intent.putExtra(Service.ACTION_START_FOREGROUND, true);
             startService(intent);
         }
     }
@@ -247,7 +247,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
             if (permissionsGranted) {
                 final Intent intent = new Intent(getApplicationContext(), Service.class);
-                intent.putExtra(Service.START_FOREGROUND_ACTION, true);
+                intent.putExtra(Service.ACTION_START_FOREGROUND, true);
                 startService(intent);
             } else {
                 //force to off if permission(s) not granted
