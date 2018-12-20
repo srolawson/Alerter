@@ -3,23 +3,27 @@
     <!-- These settings headers are only used on tablets. -->
 
     <header
+        android:id="@+id/volume-header"
         android:fragment="com.software.outram.alerter.SettingsActivity$VolumePreferenceFragment"
-        android:icon="@drawable/ic_volume_down_black_24dp"
+        android:icon="@drawable/ic_volume_down_black_38dp"
         android:title="@string/pref_header_volume_alert" />
 
     <header
+        android:id="@+id/headset-header"
         android:fragment="com.software.outram.alerter.SettingsActivity$HeadsetPreferenceFragment"
-        android:icon="@drawable/ic_headset_black_24dp"
+        android:icon="@drawable/ic_headset_orange_38dp"
         android:title="@string/pref_header_headset" />
 
     <header
+        android:id="@+id/notification-header"
         android:fragment="com.software.outram.alerter.SettingsActivity$NotificationPreferenceFragment"
-        android:icon="@drawable/ic_notifications_black_24dp"
+        android:icon="@drawable/ic_notifications_blue_38dp"
         android:title="@string/pref_header_notifications" />
 
     <header
+        android:id="@+id/message-header"
         android:fragment="com.software.outram.alerter.SettingsActivity$MessagePreferenceFragment"
-        android:icon="@drawable/ic_message_black_24dp"
+        android:icon="@drawable/ic_message_purple_38dp"
         android:title="@string/pref_header_message" />
 
 </preference-headers>
